@@ -18,7 +18,7 @@ import numpy as np
 
 from cifar10_utils import get_cifar10
 from modules import LinearModule, SoftMaxModule, CrossEntropyModule
-from modules import ReLUModule
+from modules import ELUModule
 
 
 def rel_error(x, y):
@@ -120,7 +120,7 @@ class TestLayers(unittest.TestCase):
             x = np.random.randn(N, D)
             dout = np.random.randn(*x.shape)
 
-            layer = ReLUModule()
+            layer = ELUModule()
 
             _ = layer.forward(x)
             dx = layer.backward(dout)
