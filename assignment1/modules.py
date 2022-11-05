@@ -286,7 +286,7 @@ class SoftMaxModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        dx = 0
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -331,10 +331,11 @@ class CrossEntropyModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        out = -np.mean(np.sum(y.reshape(-1, 1) * np.log(x)))
+        out = -np.sum(y.reshape(-1, 1) * np.log(x)) / x.shape[0]
         #######################
         # END OF YOUR CODE    #
         #######################
+        print(out)
 
         return out
 
