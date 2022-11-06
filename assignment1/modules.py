@@ -286,7 +286,15 @@ class SoftMaxModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        dx = 0
+        prod = -1 * np.einsum("ij, ik -> ijk", self.act, self.act)
+        diag = np.einsum("ijk -> jk", prod)
+        diag = np.expand_dims(dout, axis = 0)
+        print(diag.shape)
+        diag = np.concatenate([diag]*prod.shape[0], axis = 0)
+        soft_deriv = diag - prod
+        dout = np.expand_dims(dout, axis = 2)
+        dx = dout * soft_deriv
+        dx = np.squeeze(axis = 2)
         #######################
         # END OF YOUR CODE    #
         #######################
