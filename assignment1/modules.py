@@ -355,7 +355,7 @@ class CrossEntropyModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        dx = (y.reshape(-1, 1) * (1/x)) / x.shape[0]
+        dx = -1 * (y.reshape(-1, 1) * (1/x)) / x.shape[0]
         #######################
         # END OF YOUR CODE    #
         #######################
