@@ -103,8 +103,11 @@ def evaluate_model(model, data_loader, num_classes=10):
     return metrics
 
 
+def train_model_SGD(model, data_loader, lr):
 
-def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
+
+
+def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32**2, n_classes = 10):
     """
     Performs a full training cycle of MLP model.
 
@@ -150,19 +153,38 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
     #######################
 
     # TODO: Initialize model and loss module
-    model = ...
-    loss_module = ...
+    model = MLP(input_size, hidden_dims, n_classes)
+    loss_module = CrossEntropyModule()
     # TODO: Training loop including validation
-    val_accuracies = ...
+    val_metrics = []
+    val_accuracies = []
+    model.clear_cache()
+    for epoch in range(epochs):
+      model = train_model_SGD(model, cifar10_loader["train"], lr)
+      val_metrics.append(evaluate_model(model, cifar10_loader["validation"], n_classes))
+      val_accuracies.append(val_metrics["accuracy"])
     # TODO: Test best model
-    test_accuracy = ...
+    test_metrics  = evaluate_model(model, cifar10_loader["test"], n_classes)
+    test_accuracy = test_metrics["accuracy"]
     # TODO: Add any information you might want to save for plotting
-    logging_info = ...
+    info = {
+      "input_size": input_size,
+      "batch_size": batch_size,
+      "lr": lr,
+      "epochs": epochs,
+      "n_classes": n_classes
+      }
+    logging_info = {
+      "info": info,
+      "validation": val_metrics, 
+      "test": test_metrics
+      }
     #######################
     # END OF YOUR CODE    #
     #######################
 
-    return model, val_accuracies, test_accuracy, logging_dict
+    return model, val_accuracies, test_accuracy, logging_info
+
 
 
 if __name__ == '__main__':

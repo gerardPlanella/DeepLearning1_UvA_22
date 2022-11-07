@@ -52,7 +52,20 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        self.modules = []
+        features = [n_inputs] + n_hidden
+
+        for i in range(len(features) - 1):
+          self.modules.append(LinearModule(features[i], features[i+1], i == 0))
+          print(f"Linear Module ({features[i]}, {features[i+1]}, {i == 0}))")
+          self.modules.append(ELUModule())
+          print(f"ELU Module")
+        
+        self.modules.append(LinearModule(features[-1], n_classes, len(features) ==  1))
+        print(f"Linear Module ({features[-1]}, {n_classes}, {len(features) ==  1}))")
+        self.modules.append(SoftMaxModule())
+        print(f"Softmax Module")
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -74,6 +87,9 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+        out = x
+        for module in self.modules:
+          out = module.forward(out)
 
         #######################
         # END OF YOUR CODE    #
@@ -95,7 +111,10 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        dx = dout
+        for i in range(len(self.modules) - 1, 0, -1):
+          dx = self.modules[i].backward(dx)
+        return dx
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -112,7 +131,8 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        for module in self.modules:
+          module.clear_cache()
         #######################
         # END OF YOUR CODE    #
         #######################
