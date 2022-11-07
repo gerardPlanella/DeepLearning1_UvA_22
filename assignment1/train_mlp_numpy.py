@@ -27,7 +27,7 @@ import os
 from tqdm.auto import tqdm
 from copy import deepcopy
 from mlp_numpy import MLP
-from modules import CrossEntropyModule
+from modules import CrossEntropyModule, LinearModule
 import cifar10_utils
 
 import torch
@@ -76,7 +76,7 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1.):
     return metrics
 
 
-def evaluate_model(model, data_loader, num_classes=10):
+def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
     """
     Performs the evaluation of the MLP model on a given dataset.
 
@@ -97,17 +97,56 @@ def evaluate_model(model, data_loader, num_classes=10):
     # PUT YOUR CODE HERE  #
     #######################
 
+ 
+    out = np.zeros((batch_size, num_classes))
+    confusion_matrix = np.zeros((num_classes, num_classes))
+    n_batches = 0
+
+    for batch_num, (x, t) in enumerate(data_loader):
+      x_flat = x.reshape(x.shape[0], -1)
+      t_flat = t.reshape(-1, 1)
+
+      out[batch_num, :] = model.forward(x_flat)
+      confusion = confusion_matrix(out[batch_num, :], t_flat)
+      confusion_matrix += confusion
+      n_batches+=1
+      
+    confusion_matrix = confusion_matrix // n_batches
+    metrics = confusion_matrix_to_metrics(confusion_matrix)
+    
     #######################
     # END OF YOUR CODE    #
     #######################
     return metrics
 
 
-def train_model_SGD(model, data_loader, lr):
+def train_model_SGD(model, loss_module, data_loader, lr):
+  # x: (batch_size, 3, 32, 32)
+  # t: (batch_size, )
+  losses = []
+  for batch_num, (x, t) in enumerate(data_loader):
+    x_flat = x.reshape(x.shape[0], -1)
+    t_flat = t.reshape(-1, 1)
+
+    y = model.forward(x_flat)
+    loss = loss_module.forward(y)
+    losses.append(loss)
+
+    dx = loss_module.backward(y, t_flat)
+
+    model.backward(dx)
+    for module in model.modules:
+      if isinstance(module, LinearModule):
+        module.params["weight"] -= lr*module.params["weight"]
+        module.params["bias"] -= lr*module.params["bias"]
+
+  return model, losses
 
 
 
-def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32**2, n_classes = 10):
+
+
+def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*32*3, n_classes = 10):
   """
   Performs a full training cycle of MLP model.
 
@@ -160,7 +199,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32**
   val_accuracies = []
   model.clear_cache()
   for epoch in range(epochs):
-    model = train_model_SGD(model, cifar10_loader["train"], lr)
+    model, losses = train_model_SGD(model, loss_module, cifar10_loader["train"], lr)
     val_metrics.append(evaluate_model(model, cifar10_loader["validation"], n_classes))
     val_accuracies.append(val_metrics["accuracy"])
   # TODO: Test best model
@@ -176,6 +215,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32**
     }
   logging_info = {
     "info": info,
+    "train": {"losses": losses},
     "validation": val_metrics, 
     "test": test_metrics
     }
