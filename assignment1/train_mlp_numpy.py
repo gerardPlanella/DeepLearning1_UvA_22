@@ -108,82 +108,82 @@ def train_model_SGD(model, data_loader, lr):
 
 
 def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32**2, n_classes = 10):
-    """
-    Performs a full training cycle of MLP model.
+  """
+  Performs a full training cycle of MLP model.
 
-    Args:
-      hidden_dims: A list of ints, specificying the hidden dimensionalities to use in the MLP.
-      lr: Learning rate of the SGD to apply.
-      batch_size: Minibatch size for the data loaders.
-      epochs: Number of training epochs to perform.
-      seed: Seed to use for reproducible results.
-      data_dir: Directory where to store/find the CIFAR10 dataset.
-    Returns:
-      model: An instance of 'MLP', the trained model that performed best on the validation set.
-      val_accuracies: A list of scalar floats, containing the accuracies of the model on the
-                      validation set per epoch (element 0 - performance after epoch 1)
-      test_accuracy: scalar float, average accuracy on the test dataset of the model that 
-                     performed best on the validation. Between 0.0 and 1.0
-      logging_info: An arbitrary object containing logging information. This is for you to 
-                    decide what to put in here.
+  Args:
+    hidden_dims: A list of ints, specificying the hidden dimensionalities to use in the MLP.
+    lr: Learning rate of the SGD to apply.
+    batch_size: Minibatch size for the data loaders.
+    epochs: Number of training epochs to perform.
+    seed: Seed to use for reproducible results.
+    data_dir: Directory where to store/find the CIFAR10 dataset.
+  Returns:
+    model: An instance of 'MLP', the trained model that performed best on the validation set.
+    val_accuracies: A list of scalar floats, containing the accuracies of the model on the
+                    validation set per epoch (element 0 - performance after epoch 1)
+    test_accuracy: scalar float, average accuracy on the test dataset of the model that 
+                    performed best on the validation. Between 0.0 and 1.0
+    logging_info: An arbitrary object containing logging information. This is for you to 
+                  decide what to put in here.
 
-    TODO:
-    - Implement the training of the MLP model. 
-    - Evaluate your model on the whole validation set each epoch.
-    - After finishing training, evaluate your model that performed best on the validation set, 
-      on the whole test dataset.
-    - Integrate _all_ input arguments of this function in your training. You are allowed to add
-      additional input argument if you assign it a default value that represents the plain training
-      (e.g. '..., new_param=False')
+  TODO:
+  - Implement the training of the MLP model. 
+  - Evaluate your model on the whole validation set each epoch.
+  - After finishing training, evaluate your model that performed best on the validation set, 
+    on the whole test dataset.
+  - Integrate _all_ input arguments of this function in your training. You are allowed to add
+    additional input argument if you assign it a default value that represents the plain training
+    (e.g. '..., new_param=False')
 
-    Hint: you can save your best model by deepcopy-ing it.
-    """
+  Hint: you can save your best model by deepcopy-ing it.
+  """
 
-    # Set the random seeds for reproducibility
-    np.random.seed(seed)
-    torch.manual_seed(seed)
+  # Set the random seeds for reproducibility
+  np.random.seed(seed)
+  torch.manual_seed(seed)
 
-    ## Loading the dataset
-    cifar10 = cifar10_utils.get_cifar10(data_dir)
-    cifar10_loader = cifar10_utils.get_dataloader(cifar10, batch_size=batch_size,
-                                                  return_numpy=True)
+  ## Loading the dataset
+  cifar10 = cifar10_utils.get_cifar10(data_dir)
+  cifar10_loader = cifar10_utils.get_dataloader(cifar10, batch_size=batch_size,
+                                                return_numpy=True)
 
-    #######################
-    # PUT YOUR CODE HERE  #
-    #######################
+  #######################
+  # PUT YOUR CODE HERE  #
+  #######################
 
-    # TODO: Initialize model and loss module
-    model = MLP(input_size, hidden_dims, n_classes)
-    loss_module = CrossEntropyModule()
-    # TODO: Training loop including validation
-    val_metrics = []
-    val_accuracies = []
-    model.clear_cache()
-    for epoch in range(epochs):
-      model = train_model_SGD(model, cifar10_loader["train"], lr)
-      val_metrics.append(evaluate_model(model, cifar10_loader["validation"], n_classes))
-      val_accuracies.append(val_metrics["accuracy"])
-    # TODO: Test best model
-    test_metrics  = evaluate_model(model, cifar10_loader["test"], n_classes)
-    test_accuracy = test_metrics["accuracy"]
-    # TODO: Add any information you might want to save for plotting
-    info = {
-      "input_size": input_size,
-      "batch_size": batch_size,
-      "lr": lr,
-      "epochs": epochs,
-      "n_classes": n_classes
-      }
-    logging_info = {
-      "info": info,
-      "validation": val_metrics, 
-      "test": test_metrics
-      }
-    #######################
-    # END OF YOUR CODE    #
-    #######################
+  # TODO: Initialize model and loss module
+  model = MLP(input_size, hidden_dims, n_classes)
+  loss_module = CrossEntropyModule()
+  # TODO: Training loop including validation
+  val_metrics = []
+  val_accuracies = []
+  model.clear_cache()
+  for epoch in range(epochs):
+    model = train_model_SGD(model, cifar10_loader["train"], lr)
+    val_metrics.append(evaluate_model(model, cifar10_loader["validation"], n_classes))
+    val_accuracies.append(val_metrics["accuracy"])
+  # TODO: Test best model
+  test_metrics  = evaluate_model(model, cifar10_loader["test"], n_classes)
+  test_accuracy = test_metrics["accuracy"]
+  # TODO: Add any information you might want to save for plotting
+  info = {
+    "input_size": input_size,
+    "batch_size": batch_size,
+    "lr": lr,
+    "epochs": epochs,
+    "n_classes": n_classes
+    }
+  logging_info = {
+    "info": info,
+    "validation": val_metrics, 
+    "test": test_metrics
+    }
+  #######################
+  # END OF YOUR CODE    #
+  #######################
 
-    return model, val_accuracies, test_accuracy, logging_info
+  return model, val_accuracies, test_accuracy, logging_info
 
 
 
