@@ -287,6 +287,13 @@ class SoftMaxModule(object):
         # PUT YOUR CODE HERE  #
         #######################
         
+        prod = np.einsum("ij, ij -> ij", dout, self.act)
+        ones = np.ones((self.act.shape[1], self.act.shape[1]))
+        prod = prod @ ones
+        sub = dout - prod
+        dx = np.einsum("ij, ij -> ij", self.act, sub)
+      
+    
         
         #######################
         # END OF YOUR CODE    #

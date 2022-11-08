@@ -111,7 +111,7 @@ def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
       confusion_matrix += confusion
       n_batches+=1
       
-    confusion_matrix = confusion_matrix // n_batches
+    confusion_matrix = confusion_matrix 
     metrics = confusion_matrix_to_metrics(confusion_matrix)
     
     #######################
