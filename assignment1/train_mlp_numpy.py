@@ -142,7 +142,7 @@ def train_model_SGD(model, loss_module, data_loader, lr):
     t_flat = t.reshape(-1, 1)
 
     y = model.forward(x_flat)
-    loss = loss_module.forward(y)
+    loss = loss_module.forward(y, t_flat)
     losses.append(loss)
 
     dx = loss_module.backward(y, t_flat)
