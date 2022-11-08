@@ -33,7 +33,7 @@ import cifar10_utils
 import torch
 
 
-def confusion_matrix(predictions, targets):
+def confusion_matrix(predictions, targets, num_classes = 10):
     """
     Computes the confusion matrix, i.e. the number of true positives, false positives, true negatives and false negatives.
 
@@ -48,14 +48,16 @@ def confusion_matrix(predictions, targets):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    conf_mat = np.zeros((num_classes, num_classes))
+    for prediction, ground_truth in zip(predictions, targets):
+      conf_mat[prediction, ground_truth]+=1
     #######################
     # END OF YOUR CODE    #
     #######################
     return conf_mat
 
 
-def confusion_matrix_to_metrics(confusion_matrix, beta=1.):
+def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     """
     Converts a confusion matrix to accuracy, precision, recall and f1 scores.
     Args:
@@ -69,7 +71,20 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1.):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+    metrics = {}
 
+    n_classes = confusion_matrix.shape[0]
+
+    tp = np.diag(confusion_matrix)
+    fp = np.sum(confusion_matrix, axis=1) - tp
+    fn = np.sum(confusion_matrix, axis=0)
+    tn =  np.sum(confusion_matrix) - (fp + fn + tp)
+
+    metrics["precision"] = tp /(tp + fp)
+    metrics["recall"] = tp / (tp + fn)
+    metrics["accuracy"] = (tp + fp) / (tp + fp + tn + fn)
+    metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
+      (((beta**2) * metrics["precision"]) + metrics["recall"])
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -97,7 +112,6 @@ def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
     # PUT YOUR CODE HERE  #
     #######################
 
- 
     out = np.zeros((batch_size, num_classes))
     confusion_matrix = np.zeros((num_classes, num_classes))
     n_batches = 0
@@ -107,12 +121,11 @@ def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
       t_flat = t.reshape(-1, 1)
 
       out[batch_num, :] = model.forward(x_flat)
-      confusion = confusion_matrix(out[batch_num, :], t_flat)
+      confusion = confusion_matrix(out[batch_num, :], t_flat, num_classes)
       confusion_matrix += confusion
       n_batches+=1
-      
-    confusion_matrix = confusion_matrix 
-    metrics = confusion_matrix_to_metrics(confusion_matrix)
+
+    metrics = confusion_matrix_to_metrics(confusion_matrix, num_classes)
     
     #######################
     # END OF YOUR CODE    #
