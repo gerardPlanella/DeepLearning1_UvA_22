@@ -54,7 +54,7 @@ def confusion_matrix(predictions, targets, num_classes = 10):
     for element in range(len(targets)):
       predicted_class = np.argmax(predictions[element, :])
       conf_mat[predicted_class, targets[element]]+=1
-      print(f"Prediction: {predicted_class}, Target: {targets[element]}")
+      #print(f"Prediction: {predicted_class}, Target: {targets[element]}")
     
     #######################
     # END OF YOUR CODE    #
@@ -81,7 +81,7 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     n_classes = confusion_matrix.shape[0]
 
     tp = np.diag(confusion_matrix)
-    fp = np.sum(confusion_matrix, axis=1) - tp
+    fp = np.sum(confusion_matrix, axis=1).T - tp
     fn = np.sum(confusion_matrix, axis=0)
     tn =  np.sum(confusion_matrix) - (fp + fn + tp)
 
@@ -159,7 +159,7 @@ def train_model_SGD(model, loss_module, data_loader, lr):
 
     y = model.forward(x_flat)
     loss = loss_module.forward(y, t_flat)
-    print(loss)
+
     losses.append(loss)
 
     dx = loss_module.backward(y, t_flat)
@@ -167,8 +167,8 @@ def train_model_SGD(model, loss_module, data_loader, lr):
     model.backward(dx)
     for module in model.modules:
       if isinstance(module, LinearModule):
-        module.params["weight"] -= lr*module.params["weight"]
-        module.params["bias"] -= lr*module.params["bias"]
+        module.params["weight"] -= lr*module.grads["weight"]
+        module.params["bias"] -= lr*module.grads["bias"]
 
   return model, losses
 
