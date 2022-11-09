@@ -77,12 +77,11 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     # PUT YOUR CODE HERE  #
     #######################
     metrics = {}
-
     n_classes = confusion_matrix.shape[0]
 
     tp = np.diag(confusion_matrix)
-    fp = np.sum(confusion_matrix, axis=1).T - tp
-    fn = np.sum(confusion_matrix, axis=0)
+    fp = np.sum(confusion_matrix, axis=1)- tp
+    fn = np.sum(confusion_matrix, axis=0) - tp
     tn =  np.sum(confusion_matrix) - (fp + fn + tp)
 
     print(f"TP: {tp}")
@@ -93,12 +92,14 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
 
     metrics["precision"] = tp /(tp + fp)
     metrics["recall"] = tp / (tp + fn)
-    metrics["accuracy"] = (np.sum(tp + fp)) / (np.sum(tp + fp + tn + fn))
+    metrics["accuracy_cls"] = (tp + tn) / (tp + fp + tn + fn)
+    metrics["accuracy"] = np.mean((tp + tn) / (tp + fp + tn + fn))
 
     metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
       (((beta**2) * metrics["precision"]) + metrics["recall"])
 
     print("Accuracy: " + str(metrics["accuracy"]))
+    print("Class Accuracies: " + str(metrics["accuracy_cls"]))
     print("Precision: " + str(metrics["precision"]))
     print("Recall: " + str(metrics["recall"]))
     print("F1: " + str(metrics["f1_beta"]))
@@ -159,12 +160,11 @@ def train_model_SGD(model, loss_module, data_loader, lr):
 
     y = model.forward(x_flat)
     loss = loss_module.forward(y, t_flat)
-
     losses.append(loss)
 
     dx = loss_module.backward(y, t_flat)
-
     model.backward(dx)
+
     for module in model.modules:
       if isinstance(module, LinearModule):
         module.params["weight"] -= lr*module.grads["weight"]
