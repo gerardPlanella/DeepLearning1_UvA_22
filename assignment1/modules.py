@@ -191,7 +191,7 @@ class ELUModule(object):
         #######################
         alpha = 1.0
         self.act = x
-        out = np.where(x <= 0, (alpha * np.exp(x) - 1), x)
+        out = np.where(x <= 0, (alpha * (np.exp(x) - 1)), x)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -343,7 +343,6 @@ class CrossEntropyModule(object):
         #######################
         # END OF YOUR CODE    #
         #######################
-        print(out)
 
         return out
 

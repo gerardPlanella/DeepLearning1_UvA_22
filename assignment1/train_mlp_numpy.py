@@ -32,6 +32,7 @@ import cifar10_utils
 
 import torch
 
+import sys
 
 def confusion_matrix(predictions, targets, num_classes = 10):
     """
@@ -48,9 +49,13 @@ def confusion_matrix(predictions, targets, num_classes = 10):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+
     conf_mat = np.zeros((num_classes, num_classes))
-    for prediction, ground_truth in zip(predictions, targets):
-      conf_mat[prediction, ground_truth]+=1
+    for element in range(len(targets)):
+      predicted_class = np.argmax(predictions[element, :])
+      conf_mat[predicted_class, targets[element]]+=1
+      print(f"Prediction: {predicted_class}, Target: {targets[element]}")
+    
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -80,11 +85,23 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     fn = np.sum(confusion_matrix, axis=0)
     tn =  np.sum(confusion_matrix) - (fp + fn + tp)
 
+    print(f"TP: {tp}")
+    print(f"FP: {fp}")
+    print(f"TN: {tn}")
+    print(f"FN: {fn}")
+    print(f"Confusion Matrix: {confusion_matrix}")
+
     metrics["precision"] = tp /(tp + fp)
     metrics["recall"] = tp / (tp + fn)
-    metrics["accuracy"] = (tp + fp) / (tp + fp + tn + fn)
+    metrics["accuracy"] = (np.sum(tp + fp)) / (np.sum(tp + fp + tn + fn))
+
     metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
       (((beta**2) * metrics["precision"]) + metrics["recall"])
+
+    print("Accuracy: " + str(metrics["accuracy"]))
+    print("Precision: " + str(metrics["precision"]))
+    print("Recall: " + str(metrics["recall"]))
+    print("F1: " + str(metrics["f1_beta"]))
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -112,20 +129,19 @@ def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
     # PUT YOUR CODE HERE  #
     #######################
 
-    out = np.zeros((batch_size, num_classes))
-    confusion_matrix = np.zeros((num_classes, num_classes))
+  
+    conf_matrix = np.zeros((num_classes, num_classes))
     n_batches = 0
 
     for batch_num, (x, t) in enumerate(data_loader):
       x_flat = x.reshape(x.shape[0], -1)
       t_flat = t.reshape(-1, 1)
-
-      out[batch_num, :] = model.forward(x_flat)
-      confusion = confusion_matrix(out[batch_num, :], t_flat, num_classes)
-      confusion_matrix += confusion
+      prediction = model.forward(x_flat)
+      confusion = confusion_matrix(prediction, t_flat, num_classes)
+      conf_matrix += confusion
       n_batches+=1
 
-    metrics = confusion_matrix_to_metrics(confusion_matrix, num_classes)
+    metrics = confusion_matrix_to_metrics(conf_matrix, num_classes)
     
     #######################
     # END OF YOUR CODE    #
@@ -143,6 +159,7 @@ def train_model_SGD(model, loss_module, data_loader, lr):
 
     y = model.forward(x_flat)
     loss = loss_module.forward(y, t_flat)
+    print(loss)
     losses.append(loss)
 
     dx = loss_module.backward(y, t_flat)
@@ -211,13 +228,24 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
   val_metrics = []
   val_accuracies = []
   model.clear_cache()
+  best_accuracy = -1
+  best_epoch = -1
+  best_model = None
   for epoch in range(epochs):
     model, losses = train_model_SGD(model, loss_module, cifar10_loader["train"], lr)
-    val_metrics.append(evaluate_model(model, cifar10_loader["validation"], n_classes))
-    val_accuracies.append(val_metrics["accuracy"])
+    metric = evaluate_model(model, cifar10_loader["validation"], n_classes)
+    val_metrics.append(metric)
+    val_accuracies.append(metric["accuracy"])
+    if metric["accuracy"] > best_accuracy:
+      best_epoch = epoch
+      best_accuracy = metric["accuracy"]
+      best_model = deepcopy(model)
+    print(f"Validation Accuracy for epoch {epoch} -> {metric['accuracy']}")
   # TODO: Test best model
-  test_metrics  = evaluate_model(model, cifar10_loader["test"], n_classes)
+
+  test_metrics  = evaluate_model(best_model, cifar10_loader["test"], n_classes)
   test_accuracy = test_metrics["accuracy"]
+  print(f"Testing Accuracy for best model found in epoch {best_epoch} -> {test_accuracy}")
   # TODO: Add any information you might want to save for plotting
   info = {
     "input_size": input_size,
@@ -236,7 +264,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
   # END OF YOUR CODE    #
   #######################
 
-  return model, val_accuracies, test_accuracy, logging_info
+  return best_model, val_accuracies, test_accuracy, logging_info
 
 
 
