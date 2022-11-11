@@ -31,6 +31,8 @@ from modules import CrossEntropyModule, LinearModule
 import cifar10_utils
 
 import torch
+from collections import defaultdict
+import sys
 
 import sys
 
@@ -52,8 +54,9 @@ def confusion_matrix(predictions, targets, num_classes = 10):
 
     conf_mat = np.zeros((num_classes, num_classes))
     for element in range(len(targets)):
+      #print(predictions[element, :])
       predicted_class = np.argmax(predictions[element, :])
-      conf_mat[predicted_class, targets[element]]+=1
+      conf_mat[targets[element], predicted_class]+=1
       #print(f"Prediction: {predicted_class}, Target: {targets[element]}")
     
     #######################
@@ -76,33 +79,36 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+    
     metrics = {}
     n_classes = confusion_matrix.shape[0]
 
     tp = np.diag(confusion_matrix)
-    fp = np.sum(confusion_matrix, axis=1)- tp
-    fn = np.sum(confusion_matrix, axis=0) - tp
+    fn = np.sum(confusion_matrix, axis=1)- tp
+    fp = np.sum(confusion_matrix, axis=0) - tp
     tn =  np.sum(confusion_matrix) - (fp + fn + tp)
 
+    """
     print(f"TP: {tp}")
     print(f"FP: {fp}")
     print(f"TN: {tn}")
     print(f"FN: {fn}")
     print(f"Confusion Matrix: {confusion_matrix}")
+    """
 
     metrics["precision"] = tp /(tp + fp)
     metrics["recall"] = tp / (tp + fn)
-    metrics["accuracy_cls"] = (tp + tn) / (tp + fp + tn + fn)
-    metrics["accuracy"] = np.mean((tp + tn) / (tp + fp + tn + fn))
+    metrics["accuracy"] = np.trace(confusion_matrix) / np.sum(confusion_matrix)
 
     metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
       (((beta**2) * metrics["precision"]) + metrics["recall"])
 
+    """
     print("Accuracy: " + str(metrics["accuracy"]))
-    print("Class Accuracies: " + str(metrics["accuracy_cls"]))
     print("Precision: " + str(metrics["precision"]))
     print("Recall: " + str(metrics["recall"]))
     print("F1: " + str(metrics["f1_beta"]))
+    """
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -116,8 +122,8 @@ def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
     Args:
       model: An instance of 'MLP', the model to evaluate.
       data_loader: The data loader of the dataset to evaluate.
-    Returns:
-        metrics: A dictionary calculated using the conversion of the confusion matrix to metrics.
+    Returns:        metrics: A dictionary calculated using the conversion of the confusion matrix to metrics.
+
 
     TODO:
     Implement evaluation of the MLP model on a given dataset.
@@ -134,7 +140,7 @@ def evaluate_model(model, data_loader, batch_size = 128, num_classes=10):
     conf_matrix = np.zeros((num_classes, num_classes))
     n_batches = 0
 
-    for batch_num, (x, t) in enumerate(data_loader):
+    for x, t in data_loader:
       x_flat = x.reshape(x.shape[0], -1)
       t_flat = t.reshape(-1, 1)
       prediction = model.forward(x_flat)
@@ -156,21 +162,23 @@ def train_model_SGD(model, loss_module, data_loader, lr):
   losses = []
   for batch_num, (x, t) in enumerate(data_loader):
     x_flat = x.reshape(x.shape[0], -1)
-    t_flat = t.reshape(-1, 1)
 
     y = model.forward(x_flat)
-    loss = loss_module.forward(y, t_flat)
+    loss = loss_module.forward(y, t)
     losses.append(loss)
 
-    dx = loss_module.backward(y, t_flat)
+    dx = loss_module.backward(y, t)
     model.backward(dx)
 
     for module in model.modules:
       if isinstance(module, LinearModule):
-        module.params["weight"] -= lr*module.grads["weight"]
-        module.params["bias"] -= lr*module.grads["bias"]
+        module.params["weight"] -= (lr*module.grads["weight"])
+        module.params["bias"] -= (lr*module.grads["bias"])
+      
+      
 
   return model, losses
+
 
 
 
@@ -231,14 +239,44 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
   best_accuracy = -1
   best_epoch = -1
   best_model = None
+  total_losses = defaultdict(list)
   for epoch in range(epochs):
     model, losses = train_model_SGD(model, loss_module, cifar10_loader["train"], lr)
+
+    """"
+    for idx, module in enumerate(model.modules) :
+      if isinstance(module, LinearModule):
+        if any(item is False for item in np.isnan(module.params["weight"])):
+          print(f"Weights NaN")
+        if any(item is False for item in np.isnan(module.params["bias"])):
+          print("Bias NaN")
+        if any(item is False for item in np.isnan(module.grads["weight"])):
+          print(f"Weights Grad NaN")
+        if any(item is False for item in np.isnan(module.grads["bias"])):
+          print("Bias Grad NaN")
+
+        print(f"----- Layer {idx} -----")
+        #if not np.all(module.params["weight"]):
+        print(f"Weights Param Zero: " +  str(module.params["weight"].size - np.count_nonzero(module.params["weight"] != 0)) + ", NonZero: " + str(np.count_nonzero(module.params["weight"] != 0)))
+        #if not np.all(module.params["bias"]):
+        print("Bias Param Zero: " + str(module.params["bias"].size - np.count_nonzero(module.params["bias"] != 0)) + ", NonZero: " + str(np.count_nonzero(module.params["bias"] != 0)))
+        #if not np.all(module.grads["weight"]):
+        print(f"Weights Grad Zero: " + str(module.grads["weight"].size - np.count_nonzero(module.grads["weight"] != 0)) + ", NonZero: " + str(np.count_nonzero(module.grads["weight"] != 0)))
+        #if not np.all(module.grads["bias"]):
+        print("Bias Grad Zero: " + str(module.grads["bias"].size - np.count_nonzero(module.grads["bias"] != 0)) + ", NonZero: " + str(np.count_nonzero(module.grads["bias"] != 0)))
+        
+        if(np.count_nonzero(module.params["weight"] != 0) == 0):
+          print(module.params["weight"])
+    """
+
+    total_losses[epoch] = losses
     metric = evaluate_model(model, cifar10_loader["validation"], n_classes)
     val_metrics.append(metric)
     val_accuracies.append(metric["accuracy"])
     if metric["accuracy"] > best_accuracy:
       best_epoch = epoch
       best_accuracy = metric["accuracy"]
+      model.clear_cache()
       best_model = deepcopy(model)
     print(f"Validation Accuracy for epoch {epoch} -> {metric['accuracy']}")
   # TODO: Test best model
@@ -256,7 +294,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
     }
   logging_info = {
     "info": info,
-    "train": {"losses": losses},
+    "train": {"losses": total_losses},
     "validation": val_metrics, 
     "test": test_metrics
     }
@@ -293,6 +331,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     kwargs = vars(args)
 
-    train(**kwargs)
+    best_model, val_accuracies, test_accuracy, logging_info = train(**kwargs)
+    
+
     # Feel free to add any additional functions, such as plotting of the loss curve here
     

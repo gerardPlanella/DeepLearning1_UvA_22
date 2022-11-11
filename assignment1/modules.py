@@ -18,7 +18,7 @@ This module implements various modules of the network.
 You should fill in code into indicated sections.
 """
 import numpy as np
-
+import sys
 
 
 class LinearModule(object):
@@ -61,36 +61,14 @@ class LinearModule(object):
         #######################
 
     
-    def kaiming_initialisation(self, tensor, mode = "fan_in", first_layer = False, rectifier_slope = None):
+    def kaiming_initialisation(self, tensor, first_layer = False):
       assert tensor.ndim >= 2
 
-      if rectifier_slope is None:
-        if first_layer:
-          rectifier_slope = 1
-        else:
-          rectifier_slope = 0
 
-      if tensor.ndim == 2:
-        fan_in  = tensor.shape[1]
-        fan_out = tensor.shape[0]
-      else:
-        num_input_fmaps = tensor.shape[1]
-        num_output_fmaps = tensor.size[0]
-        receptive_field_size = 1
-        if tensor.ndim > 2:
-            receptive_field_size = tensor[0][0].numel()
-        fan_in = num_input_fmaps * receptive_field_size
-        fan_out = num_output_fmaps * receptive_field_size
+      numerator = 1 if first_layer else 2
+      var = np.sqrt(numerator/tensor.shape[1])
 
-      
-      tensor = np.random.normal(0, 1, tensor.shape)
-      if mode == "fan_in":
-        tensor *= np.sqrt(2/((1 + rectifier_slope**2)*fan_in))
-      elif mode == "fan_out":
-        tensor *= np.sqrt(2/((1 + rectifier_slope**2)*fan_out))
-      else:
-        raise ValueError("Invalid Fan mode selected")
-
+      tensor = np.random.normal(0, var, tensor.shape) 
       return tensor
 
 
@@ -113,6 +91,7 @@ class LinearModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+
         self.act = x
         out = x @ self.params["weight"].T + self.params["bias"]
         #######################
@@ -142,6 +121,7 @@ class LinearModule(object):
         self.grads["weight"] = dout.T @ self.act
         self.grads["bias"] = np.sum(dout, axis = 0)
         dx = dout @  self.params["weight"]
+        
 
         #######################
         # END OF YOUR CODE    #
@@ -191,7 +171,9 @@ class ELUModule(object):
         #######################
         alpha = 1.0
         self.act = x
-        out = np.where(x <= 0, (alpha * (np.exp(x) - 1)), x)
+        out = np.where(x < 0, (alpha * (np.exp(x) - 1)), x)
+
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -214,7 +196,7 @@ class ELUModule(object):
         # PUT YOUR CODE HERE  #
         #######################
         alpha = 1.0
-        dx = dout * np.where(self.act <= 0, alpha * np.exp(self.act), np.ones(self.act.shape))
+        dx = dout * np.where(self.act < 0, alpha * np.exp(self.act), np.ones(self.act.shape))
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -292,8 +274,7 @@ class SoftMaxModule(object):
         prod = prod @ ones
         sub = dout - prod
         dx = np.einsum("ij, ij -> ij", self.act, sub)
-      
-    
+        
         
         #######################
         # END OF YOUR CODE    #
@@ -339,7 +320,7 @@ class CrossEntropyModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        out = -np.sum(y.reshape(-1, 1) * np.log(x)) / x.shape[0]
+        out = -np.sum(np.log(x[np.arange(y.shape[0]), y])) / x.shape[0]
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -362,7 +343,9 @@ class CrossEntropyModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        dx = -1 * (y.reshape(-1, 1) * (1/x)) / x.shape[0]
+        dx = np.zeros(x.shape)
+        dx[np.arange(y.shape[0]), y] = (-1. / (x.shape[0] * x[np.arange(y.shape[0]), y]))
+
         #######################
         # END OF YOUR CODE    #
         #######################

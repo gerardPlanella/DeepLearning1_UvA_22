@@ -55,6 +55,7 @@ class MLP(object):
         self.modules = []
         features = [n_inputs] + n_hidden
 
+
         for i in range(len(features) - 1):
           self.modules.append(LinearModule(features[i], features[i+1], i == 0))
           print(f"Linear Module ({features[i]}, {features[i+1]}, {i == 0}))")
@@ -87,8 +88,15 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+
+        #print("----- Forward ----- ")
         out = x
-        for module in self.modules:
+        for idx, module in enumerate(self.modules):
+          """
+          print(f"Distribution before layer {idx}-{type(module).__name__} is N({np.mean(out):.2f}, {np.std(out):.2f})")
+          if(isinstance(module, LinearModule)):
+            print(f"Weight Distribution before layer {idx}-{type(module).__name__} is N({np.mean(module.params['weight']):.2f}, {np.std(module.params['weight'])})")
+          """
           out = module.forward(out)
 
         #######################
@@ -111,10 +119,18 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+
+        #print("----- Backward -----")
         dx = dout
-        for i in range(len(self.modules) - 1, 0, -1):
-          dx = self.modules[i].backward(dx)
-        return dx
+        for idx, module in enumerate(reversed(self.modules)):
+          """
+          print(f"dx Distribution before layer {idx}-{type(module).__name__} is N({np.mean(dx):.2f}, {np.std(dx):.2f})")
+          if(isinstance(module, LinearModule)):
+            print(f"Weight Gradient Distribution before layer {idx}-{type(module).__name__} is N({np.mean(module.grads['weight']):.2f}, {np.std(module.grads['weight'])})")
+          """
+          dx = module.backward(dx)
+        
+        return
         #######################
         # END OF YOUR CODE    #
         #######################
