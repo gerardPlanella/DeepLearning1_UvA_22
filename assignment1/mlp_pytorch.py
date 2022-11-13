@@ -39,7 +39,7 @@ class MLP(nn.Module):
         Args:
           n_inputs: number of inputs.
           n_hidden: list of ints, specifies the number of units
-                    in each linear layer. If the list is empty, the MLP
+                    self.batch_normin each linear layer. If the list is empty, the MLP
                     will not have any linear layers, and the model
                     will simply perform a multinomial logistic regression.
           n_classes: number of classes of the classification problem.
@@ -63,13 +63,28 @@ class MLP(nn.Module):
         self.modules = []
         features = [n_inputs] + n_hidden + [n_classes]
 
-        for i in range(features):
+        for i in range(len(features) - 1):
           self.modules.append(nn.Linear(features[i], features[i+1]))
-        
+
         self.use_batch_norm = use_batch_norm
         self.activation_function = nn.ELU()
-        self.batch_norm = nn.BatchNorm1d()
 
+        self.module_list = nn.ModuleList(self.modules)
+
+        first = False
+
+        for module in self.module_list:
+          if isinstance(module, nn.Linear):
+            if first:
+              first = False
+              numerator = 1
+            else:
+              numerator = 2
+            var = (numerator/module.in_features)**0.5
+            module.weight.data.normal_(mean=0.0, std=var)
+            if module.bias is not None:
+                module.bias.data.zero_()
+                
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -93,12 +108,12 @@ class MLP(nn.Module):
         #######################
         out = x
         
-        for i, module in enumerate(self.modules):
+        for i, module in enumerate(self.module_list):
           out = module(out)
-          if i < (len(self.modules) - 1):
+          if i < (len(self.module_list) - 1):
             out = self.activation_function(out)
             if(self.use_batch_norm):
-              out = self.batch_norm(module.out_features)
+              out = nn.BatchNorm1d(module.out_features)
 
         #######################
         # END OF YOUR CODE    #

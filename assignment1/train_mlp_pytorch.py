@@ -34,7 +34,12 @@ import torch.nn as nn
 import torch.optim as optim
 
 
-def confusion_matrix(predictions, targets):
+
+#Added libraries
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+
+def confusion_matrix(predictions, targets, num_classes = 10):
     """
     Computes the confusion matrix, i.e. the number of true positives, false positives, true negatives and false negatives.
 
@@ -49,14 +54,20 @@ def confusion_matrix(predictions, targets):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    conf_mat = np.zeros((num_classes, num_classes))
+    for element in range(len(targets)):
+      #print(predictions[element, :])
+      predicted_class = np.argmax(predictions[element, :])
+      conf_mat[targets[element], predicted_class]+=1
+      #print(f"Prediction: {predicted_class}, Target: {targets[element]}")
+    
     #######################
     # END OF YOUR CODE    #
     #######################
     return conf_mat
 
 
-def confusion_matrix_to_metrics(confusion_matrix, beta=1.):
+def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     """
     Converts a confusion matrix to accuracy, precision, recall and f1 scores.
     Args:
@@ -70,14 +81,42 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1.):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+    metrics = {}
+    n_classes = confusion_matrix.shape[0]
 
+    tp = np.diag(confusion_matrix)
+    fn = np.sum(confusion_matrix, axis=1)- tp
+    fp = np.sum(confusion_matrix, axis=0) - tp
+    tn =  np.sum(confusion_matrix) - (fp + fn + tp)
+
+    """
+    print(f"TP: {tp}")
+    print(f"FP: {fp}")
+    print(f"TN: {tn}")
+    print(f"FN: {fn}")
+    print(f"Confusion Matrix: {confusion_matrix}")
+    """
+
+    metrics["precision"] = tp /(tp + fp)
+    metrics["recall"] = tp / (tp + fn)
+    metrics["accuracy"] = np.trace(confusion_matrix) / np.sum(confusion_matrix)
+
+    metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
+      (((beta**2) * metrics["precision"]) + metrics["recall"])
+
+    """
+    print("Accuracy: " + str(metrics["accuracy"]))
+    print("Precision: " + str(metrics["precision"]))
+    print("Recall: " + str(metrics["recall"]))
+    print("F1: " + str(metrics["f1_beta"]))
+    """
     #######################
     # END OF YOUR CODE    #
     #######################
     return metrics
 
 
-def evaluate_model(model, data_loader, num_classes=10):
+def evaluate_model(device, model, data_loader, n_classes=10):
     """
     Performs the evaluation of the MLP model on a given dataset.
 
@@ -97,14 +136,55 @@ def evaluate_model(model, data_loader, num_classes=10):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+    model.eval()
+    conf_matrix = np.zeros((n_classes, n_classes))
+
+    with torch.no_grad():
+      for x, t in data_loader:
+        x_flat = x.reshape(x.shape[0], -1)
+        x_flat = x_flat.to(device)
+
+        preds = model(x_flat)
+
+        conf = confusion_matrix(preds.cpu().detach().numpy(), t.numpy())
+        conf_matrix += conf
+      
+      metrics = confusion_matrix_to_metrics(conf_matrix, n_classes)
 
     #######################
     # END OF YOUR CODE    #
     #######################
     return metrics
 
+def train_model(device, model, loss_module, data_loader, lr):
+  losses = []
 
-def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
+  model.train()
+  optimizer = optim.SGD(model.parameters(), lr=lr)
+
+  for x, t in data_loader:
+      x_flat = x.reshape(x.shape[0], -1)
+      x_flat = x_flat.to(device)
+
+      t = t.to(device)
+      preds = model(x_flat)
+
+      loss = loss_module(preds, t)
+      losses.append(loss.cpu().detach().numpy())
+    
+      optimizer.zero_grad()
+
+      loss.backward()
+
+      optimizer.step()
+
+
+
+
+  return model, np.mean(losses)
+
+
+def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir, n_inputs = 32*32*3, n_classes = 10):
     """
     Performs a full training cycle of MLP model.
 
@@ -157,22 +237,78 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    total_losses = []
+    val_metrics = []
+    val_accuracies = []
+    best_epoch = 0
+    best_model_state = None
+    best_accuracy = 0
     # TODO: Initialize model and loss module
-    model = ...
-    loss_module = ...
+    model = MLP(n_inputs, hidden_dims, n_classes, use_batch_norm)
+    model.to(device)
+    loss_module = nn.CrossEntropyLoss()
     # TODO: Training loop including validation
-    # TODO: Do optimization with the simple SGD optimizer
-    val_accuracies = ...
+    for epoch in tqdm(range(epochs)):
+      model, loss = train_model(device, model, loss_module, cifar10_loader["train"], lr)
+      total_losses += [loss]
+
+      metric = evaluate_model(device, model, cifar10_loader["validation"], n_classes)
+      val_metrics.append(metric)
+
+      if metric["accuracy"] > best_accuracy:
+        best_epoch = epoch
+        best_accuracy = metric["accuracy"]
+        best_model_state = deepcopy(model.cpu().state_dict())
+      
+      print(f"Validation Accuracy for epoch {epoch} -> {metric['accuracy']}")
+    
+
     # TODO: Test best model
-    test_accuracy = ...
+    best_model = MLP(n_inputs, hidden_dims, n_classes, use_batch_norm)
+    best_model.load_state_dict(best_model_state, strict=True)
+
+    best_model.to(device)
+
+    test_metrics  = evaluate_model(device, best_model, cifar10_loader["test"], n_classes)
+    test_accuracy = test_metrics["accuracy"]
+
+    print(f"Testing Accuracy for best model found in epoch {best_epoch} -> {test_accuracy}")
+
+
+    
     # TODO: Add any information you might want to save for plotting
-    logging_info = ...
+    info = {
+    "input_size": n_inputs,
+    "batch_size": batch_size,
+    "lr": lr,
+    "epochs": epochs,
+    "n_classes": n_classes
+    }
+    logging_info = {
+      "info": info,
+      "train": {"losses": total_losses},
+      "validation": val_metrics, 
+      "test": test_metrics
+      }
     #######################
     # END OF YOUR CODE    #
     #######################
 
-    return model, val_accuracies, test_accuracy, logging_info
+    return best_model, val_accuracies, test_accuracy, logging_info
+
+def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss.png"):
+  losses = logging_info["train"]["losses"]
+  n_epochs = logging_info["info"]["epochs"]
+  
+  x_axis = np.arange(len(losses))
+  fig, ax = plt.subplots()
+  plt.xlabel("Epoch")
+  plt.ylabel("Loss")
+  plt.title("Numpy MLP Validation")
+  ax.plot(x_axis, losses)
+
+  plt.savefig(filepath)
+    
 
 
 if __name__ == '__main__':
@@ -202,6 +338,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     kwargs = vars(args)
 
-    train(**kwargs)
+    best_model, val_accuracies, test_accuracy, logging_info = train(**kwargs)
+
+    saveLossFunctionPlot(logging_info)
     # Feel free to add any additional functions, such as plotting of the loss curve here
     

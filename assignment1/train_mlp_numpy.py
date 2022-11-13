@@ -35,7 +35,6 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 
-import matplotlib.ticker as ticker
 
 def confusion_matrix(predictions, targets, num_classes = 10):
     """
@@ -161,7 +160,6 @@ def train_model_SGD(model, loss_module, data_loader, lr):
   # x: (batch_size, 3, 32, 32)
   # t: (batch_size, )
   losses = []
-  n_batches = 0
   for batch_num, (x, t) in enumerate(data_loader):
     x_flat = x.reshape(x.shape[0], -1)
 
@@ -176,10 +174,9 @@ def train_model_SGD(model, loss_module, data_loader, lr):
       if isinstance(module, LinearModule):
         module.params["weight"] -= (lr*module.grads["weight"])
         module.params["bias"] -= (lr*module.grads["bias"])
-    n_batches+=1
       
 
-  return model, losses, n_batches
+  return model, np.mean(losses)
 
 
 
@@ -242,11 +239,9 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
   best_epoch = -1
   best_model = None
   total_losses = []
-  max_n_batches = 0
   for epoch in range(epochs):
-    model, losses, n_batches = train_model_SGD(model, loss_module, cifar10_loader["train"], lr)
-    if n_batches > max_n_batches:
-      max_n_batches = n_batches
+    model, loss = train_model_SGD(model, loss_module, cifar10_loader["train"], lr)
+  
     """"
     for idx, module in enumerate(model.modules) :
       if isinstance(module, LinearModule):
@@ -273,7 +268,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
           print(module.params["weight"])
     """
 
-    total_losses += losses
+    total_losses += [loss]
     metric = evaluate_model(model, cifar10_loader["validation"], n_classes)
     val_metrics.append(metric)
     val_accuracies.append(metric["accuracy"])
@@ -292,7 +287,6 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
   info = {
     "input_size": input_size,
     "batch_size": batch_size,
-    "n_batches" : n_batches,
     "lr": lr,
     "epochs": epochs,
     "n_classes": n_classes
@@ -313,24 +307,13 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir, input_size = 32*3
 def saveLossFunctionPlot(logging_info, filepath = "numpy_loss.png"):
   losses = logging_info["train"]["losses"]
   n_epochs = logging_info["info"]["epochs"]
-  batch_size = logging_info["info"]["batch_size"]
-  n_batches = logging_info["info"]["n_batches"]
   
-  x_axis = np.arange(0, len(losses) / (n_batches), 1/(n_batches))
+  x_axis = np.arange(len(losses))
   fig, ax = plt.subplots()
   plt.xlabel("Epoch")
   plt.ylabel("Loss")
   plt.title("Numpy MLP Validation")
-  plt.locator_params(axis='x', nbins=n_epochs + 1)
-  ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%d'))
-
   ax.plot(x_axis, losses)
-
-  print(max(losses))
-
-  
-  
-
 
   plt.savefig(filepath)
     
