@@ -347,6 +347,7 @@ if __name__ == '__main__':
 
     best_model, val_accuracies, test_accuracy, logging_info = train(**kwargs)
     saveLossFunctionPlot(logging_info)
+    
 
     # Feel free to add any additional functions, such as plotting of the loss curve here
     

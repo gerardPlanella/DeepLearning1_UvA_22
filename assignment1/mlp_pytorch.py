@@ -65,13 +65,15 @@ class MLP(nn.Module):
 
         for i in range(len(features) - 1):
           self.modules.append(nn.Linear(features[i], features[i+1]))
+          if use_batch_norm and i < len(features) - 2:
+            self.modules.append(nn.BatchNorm1d(features[i+1]))
 
         self.use_batch_norm = use_batch_norm
         self.activation_function = nn.ELU()
 
         self.module_list = nn.ModuleList(self.modules)
 
-        first = False
+        first = True
 
         for module in self.module_list:
           if isinstance(module, nn.Linear):
@@ -110,10 +112,8 @@ class MLP(nn.Module):
         
         for i, module in enumerate(self.module_list):
           out = module(out)
-          if i < (len(self.module_list) - 1):
+          if i < (len(self.module_list) - 1) and (not self.use_batch_norm or (self.use_batch_norm and isinstance(module, nn.BatchNorm1d))):
             out = self.activation_function(out)
-            if(self.use_batch_norm):
-              out = nn.BatchNorm1d(module.out_features)
 
         #######################
         # END OF YOUR CODE    #

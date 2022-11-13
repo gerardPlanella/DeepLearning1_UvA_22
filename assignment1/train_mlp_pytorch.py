@@ -296,7 +296,7 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir, n
 
     return best_model, val_accuracies, test_accuracy, logging_info
 
-def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss.png"):
+def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss_batchNorm.png"):
   losses = logging_info["train"]["losses"]
   n_epochs = logging_info["info"]["epochs"]
   
@@ -304,7 +304,7 @@ def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss.png"):
   fig, ax = plt.subplots()
   plt.xlabel("Epoch")
   plt.ylabel("Loss")
-  plt.title("Numpy MLP Validation")
+  plt.title("PyTorch MLP Validation w/BatchNorm")
   ax.plot(x_axis, losses)
 
   plt.savefig(filepath)
@@ -318,7 +318,7 @@ if __name__ == '__main__':
     # Model hyperparameters
     parser.add_argument('--hidden_dims', default=[128], type=int, nargs='+',
                         help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
-    parser.add_argument('--use_batch_norm', action='store_true',
+    parser.add_argument('--use_batch_norm', action='store_false',
                         help='Use this option to add Batch Normalization layers to the MLP.')
     
     # Optimizer hyperparameters
@@ -342,4 +342,3 @@ if __name__ == '__main__':
 
     saveLossFunctionPlot(logging_info)
     # Feel free to add any additional functions, such as plotting of the loss curve here
-    

@@ -26,15 +26,18 @@ import os
 from mlp_pytorch import MLP
 import cifar10_utils
 import train_mlp_pytorch
+import train_mlp_numpy
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
+import argparse
 # Hint: you might want to import some plotting libraries or similar
 # You are also allowed to use libraries here which are not in the provided environment.
 
 
-def train_models(results_filename):
+def train_models(results_filename, kwargs):
     """
     Executes all requested hyperparameter configurations and stores all results in a file.
     Note that we split the running of the model and the plotting, since you might want to 
@@ -52,8 +55,10 @@ def train_models(results_filename):
     # PUT YOUR CODE HERE  #
     #######################
     # TODO: Run all hyperparameter configurations as requested
-    results = None
+    best_model, val_accuracies, test_accuracy, logging_info = train_mlp_pytorch.train(**kwargs)
+    best_model_np, val_accuracies_np, test_accuracy_np, logging_info_np = train_mlp_numpy.train(**kwargs)
     # TODO: Save all results in a file with the name 'results_filename'. This can e.g. by a json file
+
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -82,8 +87,33 @@ def plot_results(results_filename):
 
 
 if __name__ == '__main__':
-    # Feel free to change the code below as you need it.
+    # Command line arguments
+    parser = argparse.ArgumentParser()
+    
+    # Model hyperparameters
+    parser.add_argument('--hidden_dims', default=[128], type=int, nargs='+',
+                        help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
+    parser.add_argument('--use_batch_norm', action='store_false',
+                        help='Use this option to add Batch Normalization layers to the MLP.')
+    
+    # Optimizer hyperparameters
+    parser.add_argument('--lr', default=0.1, type=float,
+                        help='Learning rate to use')
+    parser.add_argument('--batch_size', default=128, type=int,
+                        help='Minibatch size')
+
+    # Other hyperparameters
+    parser.add_argument('--epochs', default=10, type=int,
+                        help='Max number of epochs')
+    parser.add_argument('--seed', default=42, type=int,
+                        help='Seed to use for reproducing results')
+    parser.add_argument('--data_dir', default='data/', type=str,
+                        help='Data directory where to store/find the CIFAR10 dataset.')
+
+    args = parser.parse_args()
+    kwargs = vars(args)
+
     FILENAME = 'results.txt' 
     if not os.path.isfile(FILENAME):
-        train_models(FILENAME)
+        train_models(FILENAME, kwargs)
     plot_results(FILENAME)
