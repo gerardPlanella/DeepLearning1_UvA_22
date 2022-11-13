@@ -59,7 +59,17 @@ class MLP(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        super().__init__()
+        self.modules = []
+        features = [n_inputs] + n_hidden + [n_classes]
+
+        for i in range(features):
+          self.modules.append(nn.Linear(features[i], features[i+1]))
+        
+        self.use_batch_norm = use_batch_norm
+        self.activation_function = nn.ELU()
+        self.batch_norm = nn.BatchNorm1d()
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -81,6 +91,14 @@ class MLP(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+        out = x
+        
+        for i, module in enumerate(self.modules):
+          out = module(out)
+          if i < (len(self.modules) - 1):
+            out = self.activation_function(out)
+            if(self.use_batch_norm):
+              out = self.batch_norm(module.out_features)
 
         #######################
         # END OF YOUR CODE    #
