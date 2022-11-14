@@ -28,7 +28,7 @@ import os
 from mlp_pytorch import MLP
 import cifar10_utils
 import train_mlp_pytorch
-import train_mlp_numpy
+
 
 import torch
 import torch.nn as nn
@@ -38,9 +38,6 @@ import argparse
 import json
 
 import matplotlib.pyplot as plt
-# Hint: you might want to import some plotting libraries or similar
-# You are also allowed to use libraries here which are not in the provided environment.
-
 
 def train_models(results_filename, kwargs):
     """
@@ -64,16 +61,27 @@ def train_models(results_filename, kwargs):
     joined_data = {}
 
     hidden_dims_combinations = kwargs.pop("hidden_dims_combinations")
-    use_batch_norm = kwargs.pop("use_batch_norm")
+    learning_rate_range = kwargs.pop("lr_range")
+    learning_rate_list = np.logspace(learning_rate_range[0], learning_rate_range[1])
+
+    hidden_dims_default = kwargs.pop("hidden_dims")
 
     for hidden_dims in hidden_dims_combinations:
-        
-        print("Training Pytorch MLP with layers: " + str(hidden_dims))
-        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs, hidden_dims=hidden_dims, use_batch_norm=use_batch_norm)
-        print("Training Numpy MLP with layers: " + str(hidden_dims))
-        _, _, _, logging_info_np = train_mlp_numpy.train(**kwargs, hidden_dims=hidden_dims)
-        joined_data["numpy"][str(hidden_dims)] = logging_info_np
-        joined_data["torch"][str(hidden_dims)] = logging_info_torch
+        print("----- Training PyTorch MLP with layers: " + str(hidden_dims) + " -----")
+        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs, hidden_dims=hidden_dims)
+        joined_data["hidden_dims"][str(hidden_dims)] = logging_info_torch
+
+    kwargs.pop("lr")
+
+    #Add default value back into kwargs
+    kwargs["hidden_dims"] = hidden_dims_default
+
+    for lr in learning_rate_list:
+        print("----- Training PyTorch MLP with learning rate: " + str(lr) + " -----")
+        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs, lr=lr)
+        joined_data["lr"][lr] = logging_info_torch
+
+
     # TODO: Save all results in a file with the name 'results_filename'. This can e.g. by a json file
     json_object = json.dumps(joined_data, indent=4)
  
@@ -103,15 +111,12 @@ def plot_results(results_filename, logging_info):
     # PUT YOUR CODE HERE  #
     #######################
     if logging_info is None:
-        with open(FILENAME, 'r') as openfile:
+        with open(results_filename, 'r') as openfile:
             logging_info = json.load(openfile)
 
     assert logging_info is not None
 
-    logging_info_np = logging_info["numpy"]
-    logging_info_torch = logging_info["pytorch"]
-
-    fig, axs = plt.subplots(nrows=1, ncols=2)
+    fig, axs = plt.subplots(nrows=2, ncols=2)
 
     fig.suptitle("PyTorch and NumPy MLP Evaluation with different Layer Combinations")
 
@@ -125,19 +130,40 @@ def plot_results(results_filename, logging_info):
     axs[1].set_xlabel("Epoch")
     axs[1].set_ylabel("Validation Accuracy")
 
+ 
+    for combination_name in logging_info["hidden_dims"].keys():
+        losses = logging_info["hidden_dims"][combination_name]["losses"]
+        accuracies = []
+        x = np.arange(len(losses))
+        for epoch in logging_info["hidden_dims"][combination_name]["validation"].keys():
+            accuracies.append(logging_info["hidden_dims"][combination_name]["validation"][epoch])
+        axs[0].plot(x, losses, label=combination_name)
+        axs[1].plot(x, accuracies, label=combination_name)
     
-    for model_name in logging_info.keys():
-        for combination_name in logging_info[model_name].keys():
-            losses = logging_info[model_name][combination_name]["losses"]
-            accuracies = []
-            x = np.arange(len(losses))
-            for epoch in logging_info[model_name][combination_name]["validation"].keys():
-                accuracies.append(logging_info[model_name][combination_name]["validation"][epoch])
-            axs[0].plot(x, losses, label=model_name + "_" + combination_name)
-            axs[1].plot(x, accuracies, label=model_name + "_" + combination_name)
+    axs[0].legend(title="Hidden Dimensions")
+    axs[1].legend(title="Hidden Dimensions")
+
+
+    axs[2].set_title("Training Loss Curve")
+    axs[2].set_ylabel("Loss")
+    axs[2].set_xlabel("Epoch")
+
+    axs[3].set_title("Validation Accuracy Curve")
+    axs[3].set_xlabel("Epoch")
+    axs[3].set_ylabel("Validation Accuracy")
+
+    for combination_name in logging_info["lr"].keys():
+        losses = logging_info["lr"][combination_name]["losses"]
+        accuracies = []
+        x = np.arange(len(losses))
+        for epoch in logging_info["lr"][combination_name]["validation"].keys():
+            accuracies.append(logging_info["lr"][combination_name]["validation"][epoch])
+        axs[2].plot(x, losses, label=str(combination_name))
+        axs[3].plot(x, accuracies, label=str(combination_name))
+
+    axs[2].legend(title="SGD Learning Rate")
+    axs[3].legend(title="SGD Learning Rate")
     
-    axs[0].legend()
-    axs[1].legend()
 
     plt.tight_layout()
     plt.show()
@@ -155,13 +181,20 @@ if __name__ == '__main__':
     parser.add_argument('--hidden_dims_combinations', default=[[128], [256, 128], [512, 256, 128]], type=int, nargs='+',
                         help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
 
-                        
+    parser.add_argument('--hidden_dims', default=[128], type=int, nargs='+',
+                        help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
+        
     parser.add_argument('--use_batch_norm', action='store_false',
                         help='Use this option to add Batch Normalization layers to the MLP.')
     
     # Optimizer hyperparameters
     parser.add_argument('--lr', default=0.1, type=float,
                         help='Learning rate to use')
+    
+    parser.add_argument('--lr_range', default=[0.000001, 100], type=float, nargs='+',
+                        help='Learning rate to use')
+
+
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Minibatch size')
 
@@ -180,4 +213,4 @@ if __name__ == '__main__':
     data_dict = None
     if not os.path.isfile(FILENAME):
         data_dict = train_models(FILENAME, kwargs)
-    #plot_results(FILENAME, data_dict)
+    plot_results(FILENAME, data_dict)

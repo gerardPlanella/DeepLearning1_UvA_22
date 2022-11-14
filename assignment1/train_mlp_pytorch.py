@@ -39,6 +39,8 @@ import torch.optim as optim
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+import seaborn as sns
+
 def confusion_matrix(predictions, targets, num_classes = 10):
     """
     Computes the confusion matrix, i.e. the number of true positives, false positives, true negatives and false negatives.
@@ -103,6 +105,8 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
 
     metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
       (((beta**2) * metrics["precision"]) + metrics["recall"])
+
+    metrics["confusion_matrix"] = confusion_matrix
 
     """
     print("Accuracy: " + str(metrics["accuracy"]))
@@ -273,8 +277,6 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir, n
     test_accuracy = test_metrics["accuracy"]
 
     print(f"Testing Accuracy for best model found in epoch {best_epoch} -> {test_accuracy}")
-
-
     
     # TODO: Add any information you might want to save for plotting
     info = {
@@ -326,6 +328,18 @@ def saveAccuracyLossCurve(logging_info, filepath = "pytorch_validation_accuracy.
   plt.savefig(filepath)
   
 
+def saveConfusionMatrix(logging_info, filepath = "pytorch_confusion_matrix.png"):
+  confusion_matrix = logging_info["test"]["confusion_matrix"]
+  fig = plt.figure(figsize=(16, 5))
+  fig, ax = plt.subplots()
+
+  conf = sns.heatmap(confusion_matrix, annot=True, fmt='g', ax=ax, linewidths=.5)
+  ax.set_title("Testing Confusion Matrix")
+  ax.set_ylabel("Ground Truth")
+  ax.set_xlabel("Prediction")
+  fig = conf.get_figure()
+  fig.savefig(filepath) 
+
 if __name__ == '__main__':
     # Command line arguments
     parser = argparse.ArgumentParser()
@@ -335,6 +349,7 @@ if __name__ == '__main__':
                         help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
     parser.add_argument('--use_batch_norm', action='store_true',
                         help='Use this option to add Batch Normalization layers to the MLP.')
+    
     
     # Optimizer hyperparameters
     parser.add_argument('--lr', default=0.1, type=float,
@@ -357,3 +372,4 @@ if __name__ == '__main__':
 
     saveLossFunctionPlot(logging_info)
     saveAccuracyLossCurve(logging_info)
+    saveConfusionMatrix(logging_info)

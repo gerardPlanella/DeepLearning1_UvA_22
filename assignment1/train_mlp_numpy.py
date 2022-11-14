@@ -34,6 +34,7 @@ import torch
 from collections import defaultdict
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def confusion_matrix(predictions, targets, num_classes = 10):
@@ -102,6 +103,8 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
 
     metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
       (((beta**2) * metrics["precision"]) + metrics["recall"])
+
+    metrics["confusion_matrix"] = confusion_matrix
 
     """
     print("Accuracy: " + str(metrics["accuracy"]))
@@ -333,7 +336,17 @@ def saveAccuracyLossCurve(logging_info, filepath = "numpy_validation_accuracy.pn
 
   plt.savefig(filepath)
     
+def saveConfusionMatrix(logging_info, filepath = "numpy_confusion_matrix.png"):
+  confusion_matrix = logging_info["test"]["confusion_matrix"]
+  fig = plt.figure(figsize=(16, 5))
+  fig, ax = plt.subplots()
 
+  conf = sns.heatmap(confusion_matrix, annot=True, fmt='g', ax=ax, linewidths=.5)
+  ax.set_title("Testing Confusion Matrix")
+  ax.set_ylabel("Ground Truth")
+  ax.set_xlabel("Prediction")
+  fig = conf.get_figure()
+  fig.savefig(filepath) 
 
 
 if __name__ == '__main__':
@@ -364,6 +377,7 @@ if __name__ == '__main__':
     best_model, val_accuracies, test_accuracy, logging_info = train(**kwargs)
     saveLossFunctionPlot(logging_info)
     saveAccuracyLossCurve(logging_info)
+    saveConfusionMatrix(logging_info)
 
     # Feel free to add any additional functions, such as plotting of the loss curve here
     
