@@ -312,8 +312,24 @@ def saveLossFunctionPlot(logging_info, filepath = "numpy_loss.png"):
   fig, ax = plt.subplots()
   plt.xlabel("Epoch")
   plt.ylabel("Loss")
-  plt.title("Numpy MLP Validation")
+  plt.title("NumPy MLP Training Loss Curve")
   ax.plot(x_axis, losses)
+
+  plt.savefig(filepath)
+
+def saveAccuracyLossCurve(logging_info, filepath = "numpy_validation_accuracy.png"):
+  accuracies = []
+
+  for metric in logging_info["validation"]:
+    accuracies.append(metric["accuracy"])
+
+  
+  x_axis = np.arange(len(accuracies))
+  fig, ax = plt.subplots()
+  plt.xlabel("Epoch")
+  plt.ylabel("Validation Accuracy")
+  plt.title("NumPy MLP Validation Accuracy")
+  ax.plot(x_axis, accuracies)
 
   plt.savefig(filepath)
     
@@ -347,7 +363,7 @@ if __name__ == '__main__':
 
     best_model, val_accuracies, test_accuracy, logging_info = train(**kwargs)
     saveLossFunctionPlot(logging_info)
-    
+    saveAccuracyLossCurve(logging_info)
 
     # Feel free to add any additional functions, such as plotting of the loss curve here
     

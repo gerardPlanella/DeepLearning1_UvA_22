@@ -296,7 +296,7 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir, n
 
     return best_model, val_accuracies, test_accuracy, logging_info
 
-def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss_batchNorm.png"):
+def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss.png"):
   losses = logging_info["train"]["losses"]
   n_epochs = logging_info["info"]["epochs"]
   
@@ -304,12 +304,27 @@ def saveLossFunctionPlot(logging_info, filepath = "pytorch_loss_batchNorm.png"):
   fig, ax = plt.subplots()
   plt.xlabel("Epoch")
   plt.ylabel("Loss")
-  plt.title("PyTorch MLP Validation w/BatchNorm")
+  plt.title("PyTorch MLP Training Loss Curve")
   ax.plot(x_axis, losses)
 
   plt.savefig(filepath)
     
+def saveAccuracyLossCurve(logging_info, filepath = "pytorch_validation_accuracy.png"):
+  accuracies = []
 
+  for metric in logging_info["validation"]:
+    accuracies.append(metric["accuracy"])
+
+  
+  x_axis = np.arange(len(accuracies))
+  fig, ax = plt.subplots()
+  plt.xlabel("Epoch")
+  plt.ylabel("Validation Accuracy")
+  plt.title("PyTorch MLP Validation Accuracy")
+  ax.plot(x_axis, accuracies)
+
+  plt.savefig(filepath)
+  
 
 if __name__ == '__main__':
     # Command line arguments
@@ -318,7 +333,7 @@ if __name__ == '__main__':
     # Model hyperparameters
     parser.add_argument('--hidden_dims', default=[128], type=int, nargs='+',
                         help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
-    parser.add_argument('--use_batch_norm', action='store_false',
+    parser.add_argument('--use_batch_norm', action='store_true',
                         help='Use this option to add Batch Normalization layers to the MLP.')
     
     # Optimizer hyperparameters
@@ -341,4 +356,4 @@ if __name__ == '__main__':
     best_model, val_accuracies, test_accuracy, logging_info = train(**kwargs)
 
     saveLossFunctionPlot(logging_info)
-    # Feel free to add any additional functions, such as plotting of the loss curve here
+    saveAccuracyLossCurve(logging_info)
