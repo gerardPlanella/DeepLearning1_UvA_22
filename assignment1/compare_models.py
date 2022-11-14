@@ -38,6 +38,18 @@ import argparse
 import json
 
 import matplotlib.pyplot as plt
+from collections import defaultdict
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
 
 def train_models(results_filename, kwargs):
     """
@@ -58,32 +70,40 @@ def train_models(results_filename, kwargs):
     #######################
     # TODO: Run all hyperparameter configurations as requested
 
-    joined_data = {}
+    joined_data = defaultdict(dict)
 
     hidden_dims_combinations = kwargs.pop("hidden_dims_combinations")
     learning_rate_range = kwargs.pop("lr_range")
-    learning_rate_list = np.logspace(learning_rate_range[0], learning_rate_range[1])
+    learning_rate_list = [10**x for x in range(learning_rate_range[0], learning_rate_range[1] + 1)]
 
-    hidden_dims_default = kwargs.pop("hidden_dims")
+    hidden_dims_default = kwargs["hidden_dims"]
+    epochs_default = kwargs["epochs"]
+    epochs_layers = kwargs.pop("epochs_layers")
+
+    kwargs["epochs"] = epochs_layers
 
     for hidden_dims in hidden_dims_combinations:
+
         print("----- Training PyTorch MLP with layers: " + str(hidden_dims) + " -----")
-        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs, hidden_dims=hidden_dims)
+        kwargs["hidden_dims"] = hidden_dims
+        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs)
         joined_data["hidden_dims"][str(hidden_dims)] = logging_info_torch
 
     kwargs.pop("lr")
 
     #Add default value back into kwargs
     kwargs["hidden_dims"] = hidden_dims_default
+    kwargs["epochs"] = epochs_default
 
     for lr in learning_rate_list:
         print("----- Training PyTorch MLP with learning rate: " + str(lr) + " -----")
-        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs, lr=lr)
+        kwargs["lr"] = lr
+        _, _, _, logging_info_torch = train_mlp_pytorch.train(**kwargs)
         joined_data["lr"][lr] = logging_info_torch
 
 
     # TODO: Save all results in a file with the name 'results_filename'. This can e.g. by a json file
-    json_object = json.dumps(joined_data, indent=4)
+    json_object = json.dumps(joined_data, indent=4, cls=NpEncoder)
  
     with open(results_filename, "w") as outfile:
         outfile.write(json_object)
@@ -132,11 +152,11 @@ def plot_results(results_filename, logging_info):
 
  
     for combination_name in logging_info["hidden_dims"].keys():
-        losses = logging_info["hidden_dims"][combination_name]["losses"]
+        losses = logging_info["hidden_dims"][combination_name]["train"]["losses"]
         accuracies = []
         x = np.arange(len(losses))
-        for epoch in logging_info["hidden_dims"][combination_name]["validation"].keys():
-            accuracies.append(logging_info["hidden_dims"][combination_name]["validation"][epoch])
+        for metric in logging_info["hidden_dims"][combination_name]["validation"]:
+            accuracies.append(metric["accuracy"])
         axs[0].plot(x, losses, label=combination_name)
         axs[1].plot(x, accuracies, label=combination_name)
     
@@ -151,13 +171,14 @@ def plot_results(results_filename, logging_info):
     axs[3].set_title("Validation Accuracy Curve")
     axs[3].set_xlabel("Epoch")
     axs[3].set_ylabel("Validation Accuracy")
+    axs[2].set_ylim(top=4)
 
     for combination_name in logging_info["lr"].keys():
-        losses = logging_info["lr"][combination_name]["losses"]
+        losses = logging_info["lr"][combination_name]["train"]["losses"]
         accuracies = []
         x = np.arange(len(losses))
-        for epoch in logging_info["lr"][combination_name]["validation"].keys():
-            accuracies.append(logging_info["lr"][combination_name]["validation"][epoch])
+        for metric in logging_info["lr"][combination_name]["validation"]:
+            accuracies.append(metric["accuracy"])
         axs[2].plot(x, losses, label=str(combination_name))
         axs[3].plot(x, accuracies, label=str(combination_name))
 
@@ -184,14 +205,14 @@ if __name__ == '__main__':
     parser.add_argument('--hidden_dims', default=[128], type=int, nargs='+',
                         help='Hidden dimensionalities to use inside the network. To specify multiple, use " " to separate them. Example: "256 128"')
         
-    parser.add_argument('--use_batch_norm', action='store_false',
+    parser.add_argument('--use_batch_norm', action='store_true',
                         help='Use this option to add Batch Normalization layers to the MLP.')
     
     # Optimizer hyperparameters
     parser.add_argument('--lr', default=0.1, type=float,
                         help='Learning rate to use')
     
-    parser.add_argument('--lr_range', default=[0.000001, 100], type=float, nargs='+',
+    parser.add_argument('--lr_range', default=[-6, 2], type=float, nargs='+',
                         help='Learning rate to use')
 
 
@@ -199,8 +220,10 @@ if __name__ == '__main__':
                         help='Minibatch size')
 
     # Other hyperparameters
-    parser.add_argument('--epochs', default=0, type=int,
+    parser.add_argument('--epochs', default=10, type=int,
                         help='Max number of epochs')
+    parser.add_argument('--epochs_layers', default=20, type=int,
+                        help='Max number of epochs') 
     parser.add_argument('--seed', default=42, type=int,
                         help='Seed to use for reproducing results')
     parser.add_argument('--data_dir', default='data/', type=str,

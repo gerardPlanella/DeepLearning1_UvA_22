@@ -66,7 +66,7 @@ def confusion_matrix(predictions, targets, num_classes = 10):
     return conf_mat
 
 
-def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
+def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10, betaList = [0.1, 1, 10]):
     """
     Converts a confusion matrix to accuracy, precision, recall and f1 scores.
     Args:
@@ -97,12 +97,23 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
     print(f"Confusion Matrix: {confusion_matrix}")
     """
 
+    
     metrics["precision"] = tp /(tp + fp)
     metrics["recall"] = tp / (tp + fn)
     metrics["accuracy"] = np.trace(confusion_matrix) / np.sum(confusion_matrix)
-
     metrics["f1_beta"] = (1 + beta**2)*(metrics["precision"] * metrics["recall"]) / \
       (((beta**2) * metrics["precision"]) + metrics["recall"])
+
+    metrics["BetaList"] = {}
+    for b in betaList:
+      metrics["BetaList"][b] =  (1 + b**2)*(metrics["precision"] * metrics["recall"]) / \
+      (((b**2) * metrics["precision"]) + metrics["recall"])
+
+
+    metrics["precision"][np.isnan(metrics["precision"])] = 0
+    metrics["recall"][np.isnan(metrics["recall"])] = 0
+    metrics["f1_beta"][np.isnan(metrics["f1_beta"])] = 0
+
 
     metrics["confusion_matrix"] = confusion_matrix
 

@@ -108,6 +108,11 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
 
     metrics["confusion_matrix"] = confusion_matrix
 
+
+    metrics["precision"][np.isnan(metrics["precision"])] = 0
+    metrics["recall"][np.isnan(metrics["recall"])] = 0
+    metrics["f1_beta"][np.isnan(metrics["f1_beta"])] = 0
+
     """
     print("Accuracy: " + str(metrics["accuracy"]))
     print("Precision: " + str(metrics["precision"]))
@@ -182,9 +187,6 @@ def train_model(device, model, loss_module, data_loader, lr):
 
       optimizer.step()
 
-
-
-
   return model, np.mean(losses)
 
 
@@ -252,9 +254,12 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir, n
     model.to(device)
     loss_module = nn.CrossEntropyLoss()
     # TODO: Training loop including validation
+    
     for epoch in tqdm(range(epochs)):
       model, loss = train_model(device, model, loss_module, cifar10_loader["train"], lr)
       total_losses += [loss]
+
+      print(loss)
 
       metric = evaluate_model(device, model, cifar10_loader["validation"], n_classes)
       val_metrics.append(metric)
