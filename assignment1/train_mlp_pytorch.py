@@ -69,7 +69,7 @@ def confusion_matrix(predictions, targets, num_classes = 10):
     return conf_mat
 
 
-def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
+def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10, betaList = [0.1, 1, 10]):
     """
     Converts a confusion matrix to accuracy, precision, recall and f1 scores.
     Args:
@@ -107,6 +107,12 @@ def confusion_matrix_to_metrics(confusion_matrix, beta=1., num_classes = 10):
       (((beta**2) * metrics["precision"]) + metrics["recall"])
 
     metrics["confusion_matrix"] = confusion_matrix
+
+
+    metrics["BetaList"] = {}
+    for b in betaList:
+      metrics["BetaList"][b] =  (1 + b**2)*(metrics["precision"] * metrics["recall"]) / \
+      (((b**2) * metrics["precision"]) + metrics["recall"])
 
 
     metrics["precision"][np.isnan(metrics["precision"])] = 0
@@ -258,8 +264,6 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir, n
     for epoch in tqdm(range(epochs)):
       model, loss = train_model(device, model, loss_module, cifar10_loader["train"], lr)
       total_losses += [loss]
-
-      print(loss)
 
       metric = evaluate_model(device, model, cifar10_loader["validation"], n_classes)
       val_metrics.append(metric)
