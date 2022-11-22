@@ -33,11 +33,11 @@ def add_augmentation(augmentation_name, transform_list):
     # PUT YOUR CODE HERE  #
     #######################
 
-    # Create a new transformation based on the augmentation_name.
-    pass
-
-    # Add the new transformation to the list.
-    pass
+    augmentations = augmentation_name.split(" ")
+    if "randomhorizontalflip" in augmentations.lower():
+        transform_list.insert(0, transforms.RandomHorizontalFlip())
+    if "colorjitter" in augmentations.lower():
+        transform_list.insert(0, transforms.ColorJitter())
 
     #######################
     # END OF YOUR CODE    #

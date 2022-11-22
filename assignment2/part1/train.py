@@ -21,7 +21,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data as data
 import torchvision.models as models
-
+from tqdm import tqdm
+from copy import deepcopy
+import datetime
+import pickle
 from cifar100_utils import get_train_validation_set, get_test_set
 
 
@@ -52,16 +55,46 @@ def get_model(num_classes=100):
     #######################
 
     # Get the pretrained ResNet18 model on ImageNet from torchvision.models
-    pass
+    model = models.resnet18(weights="IMAGENET1K_V1")
 
     # Randomly initialize and modify the model's last layer for CIFAR100.
-    pass
+    
+    fc_features_in = model.fc.in_features
+    fc_features_out = num_classes
+
+    for param in model.parameters():
+        param.requires_grad = False
+
+    model.fc = nn.Linear(fc_features_in, fc_features_out)
+    model.fc.weight = nn.init.normal_(model.fc.weight, mean=0.0, std=0.01)    
+    model.fc.bias = nn.init.zeros_(model.fc.bias)
+
 
     #######################
     # END OF YOUR CODE    #
     #######################
 
     return model
+
+def train_step_model(device, model, criterion, optimizer, data):
+  losses = []
+
+  model.train()
+  for x, t in data:
+    x = x.to(device)
+    t = t.to(device)
+
+    optimizer.zero_grad()
+    
+    preds = model(x)
+
+    loss = criterion(preds, t)
+    losses.append(loss.cpu().detach().numpy())
+
+    loss.backward()
+    optimizer.step()
+
+  return model, np.mean(losses)
 
 
 def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name=None):
@@ -85,16 +118,49 @@ def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device
     #######################
 
     # Load the datasets
-    pass
+    train_data, validation_data = get_train_validation_set(data_dir, augmentation_name=augmentation_name)
 
+    trainLoader = torch.utils.data.DataLoader(
+        train_data, batch_size, shuffle=True, drop_last = True)
+
+
+    valLoader = torch.utils.data.DataLoader(
+        validation_data, batch_size, shuffle=True, drop_last = False)
+
+    data = {
+        "train":trainLoader,
+        "val":valLoader
+    }
     # Initialize the optimizer (Adam) to train the last layer of the model.
-    pass
 
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    model.to(device)
     # Training loop with validation after each epoch. Save the best model.
-    pass
+    best_model_state_dict = None
+    best_acc = 0
+    best_epoch = 0
+    losses = []
+    acc = []
 
-    # Load the best model on val accuracy and return it.
-    pass
+    for epoch in tqdm(range(epochs)):
+        model, loss = train_step_model(device, model, criterion, optimizer, data["train"])
+        losses += [loss]
+
+
+        accuracy = evaluate_model(model, data["val"], device)
+        acc += [accuracy]
+
+        print(f" Loss: {loss}, Accuracy: {accuracy}")
+
+        if(accuracy > best_acc):
+            best_acc = accuracy
+            best_epoch = epoch
+            best_model_state_dict = deepcopy(model.state_dict())
+        
+    model.load_state_dict(best_model_state_dict)
+    checkpoint_name+=f"_epoch={best_epoch}_val_acc={best_acc}.pt"
+    torch.save(best_model_state_dict, data_dir+checkpoint_name)
 
     #######################
     # END OF YOUR CODE    #
@@ -118,12 +184,23 @@ def evaluate_model(model, data_loader, device):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    # Set model to evaluation mode (Remember to set it back to training mode in the training loop)
-    pass
+    model.eval()
+    acc = 0
 
-    # Loop over the dataset and compute the accuracy. Return the accuracy
-    # Remember to use torch.no_grad().
-    pass
+    with torch.no_grad():
+        for x, t in data_loader:
+            x = x.to(device)
+            t = t.to(device)
+            out = model(x)
+            
+            out = out.cpu().detach().numpy()
+            preds = np.argmax(out, axis = 1)
+
+            acc += np.sum(t.cpu().numpy() == preds)
+
+        
+
+    accuracy =  (acc / len(data_loader.dataset)) * 100
 
     #######################
     # END OF YOUR CODE    #
@@ -148,23 +225,31 @@ def main(lr, batch_size, epochs, data_dir, seed, augmentation_name):
     # PUT YOUR CODE HERE  #
     #######################
     # Set the seed for reproducibility
-    pass
+    set_seed(seed)
 
     # Set the device to use for training
-    pass
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    if(torch.cuda.is_available()):
+        print("Using GPU: " + torch.cuda.get_device_name(device))
+    else:
+        print("Using CPU")
 
     # Load the model
-    pass
-
-    # Get the augmentation to use
-    pass
+    model = get_model()
 
     # Train the model
-    pass
+    checkpoint_name = datetime.datetime.now().strftime(f"%Y_%d_%m_%M_%S_lr={lr}_augmentations={augmentation_name}_batchSize={batch_size}")
+    train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name)
 
     # Evaluate the model on the test set
-    pass
+    test_data = get_test_set()
+    testLoader = torch.utils.data.DataLoader(
+      test_data, batch_size, shuffle=True, drop_last = False)
+    
+    accuracy = evaluate_model(model, testLoader, device)
 
+    print("Obtained Testing Accuracy of: " + str(accuracy) + "%")
     #######################
     # END OF YOUR CODE    #
     #######################
