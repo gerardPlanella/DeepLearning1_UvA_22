@@ -133,3 +133,5 @@ dmypy.json
 
 assignment1/data/
 assignment1/numpy_loss.png
+*.out
+*.pt
