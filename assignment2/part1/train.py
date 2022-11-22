@@ -97,7 +97,7 @@ def train_step_model(device, model, criterion, optimizer, data):
   return model, np.mean(losses)
 
 
-def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name=None):
+def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name=None, out_dir="out/"):
     """
     Trains a given model architecture for the specified hyperparameters.
 
@@ -159,8 +159,8 @@ def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device
             best_model_state_dict = deepcopy(model.state_dict())
         
     model.load_state_dict(best_model_state_dict)
-    checkpoint_name+=f"_epoch={best_epoch}_val_acc={best_acc}.pt"
-    torch.save(best_model_state_dict, data_dir+checkpoint_name)
+    checkpoint_name+=f"_epoch={best_epoch}_val_acc={best_acc:.2f}.pt"
+    torch.save(best_model_state_dict, out_dir+checkpoint_name)
 
     #######################
     # END OF YOUR CODE    #
@@ -239,11 +239,11 @@ def main(lr, batch_size, epochs, data_dir, seed, augmentation_name):
     model = get_model()
 
     # Train the model
-    checkpoint_name = datetime.datetime.now().strftime(f"%Y_%d_%m_%M_%S_lr={lr}_augmentations={augmentation_name}_batchSize={batch_size}")
+    checkpoint_name = datetime.datetime.now().strftime(f"%Y_%m_%d_%H_%M_%S_lr={lr}_augmentations={augmentation_name}_batchSize={batch_size}")
     train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name)
 
     # Evaluate the model on the test set
-    test_data = get_test_set()
+    test_data = get_test_set(data_dir)
     testLoader = torch.utils.data.DataLoader(
       test_data, batch_size, shuffle=True, drop_last = False)
     

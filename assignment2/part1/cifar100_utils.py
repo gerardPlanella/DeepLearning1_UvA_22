@@ -33,10 +33,12 @@ def add_augmentation(augmentation_name, transform_list):
     # PUT YOUR CODE HERE  #
     #######################
 
-    augmentations = augmentation_name.split(" ")
-    if "randomhorizontalflip" in augmentations.lower():
+    augmentations = augmentation_name.split("_")
+    augmentations = [x.lower() for x in augmentations]
+   
+    if "randomhorizontalflip" in augmentations:
         transform_list.insert(0, transforms.RandomHorizontalFlip())
-    if "colorjitter" in augmentations.lower():
+    if "colorjitter" in augmentations:
         transform_list.insert(0, transforms.ColorJitter())
 
     #######################
