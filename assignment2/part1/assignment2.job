@@ -19,4 +19,4 @@ cd $HOME/...
 source activate dl2022
 # Run your code
 srun python -u train.py --epochs=10 --data_dir $TMPDIR
-#srun python -u train.py --epochs=15 --data_dir $TMPDIR --augmentation_name="randomhorizontalflip_colorjitter"
+#srun python -u train.py --epochs=20 --data_dir $TMPDIR --augmentation_name="randomhorizontalflip_colorjitter"
