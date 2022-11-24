@@ -187,11 +187,12 @@ class RandomPatchPrompter(nn.Module):
         #   your prompter does what you expect it to do.
 
         patch_size = self.patch.shape[2]
-        origin = np.random.randint(low=0, high=x.shape[2] - patch_size)
-
+        origin_x = np.random.randint(low=0, high=x.shape[3] - patch_size)
+        origin_y = np.random.randint(low=0, high=x.shape[2] - patch_size)
+        
         patch_size = self.patch.shape[2]
         prompt = torch.zeros(x.shape)
-        prompt[:, :, origin:origin + patch_size, origin: origin + patch_size] = self.patch
+        prompt[:, :, origin_x:origin_x + patch_size, origin_y: origin_y + patch_size] = self.patch
 
         x = x.to(self.device)
         prompt = prompt.to(self.device)
