@@ -131,7 +131,15 @@ dmypy.json
 
 #Local
 
+#Assignment 1
 assignment1/data/
 assignment1/numpy_loss.png
-*.out
+
+
+#Assignment 2
 *.pt
+data/
+save/
+../**/data/
+../**/save/
+test_*.txt

@@ -28,7 +28,7 @@ from torchvision.datasets import CIFAR10, CIFAR100
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import torch.nn as nn
-from utils import AverageMeter, set_seed
+from utils import AverageMeter, set_seed, accuracy
 
 
 DATASET = {"cifar10": CIFAR10, "cifar100": CIFAR100}
@@ -170,8 +170,13 @@ class ZeroshotCLIP(nn.Module):
         # - Read the CLIP API documentation for more details:
         #   https://github.com/openai/CLIP#api
 
-        # remove this line once you implement the function
-        raise NotImplementedError("Implement the precompute_text_features function.")
+        text_inputs = clip.tokenize(prompts).to(device)
+
+        with torch.no_grad():
+            text_features = clip_model.encode_text(text_inputs)
+        
+        text_features /= text_features.norm(dim = -1, keepdim = True)
+        return text_features
 
         #######################
         # END OF YOUR CODE    #
@@ -209,8 +214,14 @@ class ZeroshotCLIP(nn.Module):
         # - Read the CLIP API documentation for more details:
         #   https://github.com/openai/CLIP#api
 
-        # remove this line once you implement the function
-        raise NotImplementedError("Implement the model_inference function.")
+        with torch.no_grad():
+            image_features = self.clip_model.encode_image(image)
+
+        image_features /= image_features.norm(dim=-1, keepdim=True)
+        similarity = (100.0 * image_features @ self.text_features.T).softmax(dim=-1)
+        logits = similarity*self.logit_scale
+        return logits
+
 
         #######################
         # END OF YOUR CODE    #
@@ -223,12 +234,12 @@ class ZeroshotCLIP(nn.Module):
         model_path = clip._download(url, args.root)
         try:
             # loading JIT archive
-            model = torch.jit.load(model_path, map_location="cpu").eval()
+            model = torch.jit.load(model_path, map_location="cpu").eval() #type: ignore
             state_dict = None
         except RuntimeError:
             state_dict = torch.load(model_path, map_location="cpu")
 
-        model = clip.build_model(state_dict or model.state_dict())
+        model = clip.build_model(state_dict or model.state_dict()) # type: ignore
         return model
 
     def num_params(self):
@@ -370,16 +381,24 @@ def main():
     # - Before filling this part, you should first complete the ZeroShotCLIP class
     # - Updating the accuracy meter is as simple as calling top1.update(accuracy, batch_size)
     # - You can use the model_inference method of the ZeroshotCLIP class to get the logits
-
-    # you can remove the following line once you have implemented the inference loop
-    raise NotImplementedError("Implement the inference loop")
-
+    batch_num = 0
+    print("Starting inference...")
+    with torch.no_grad():
+        for images, labels in loader:
+            images = images.to(device)
+            labels = labels.to(device)
+            logits = clipzs.model_inference(images)
+            acc = accuracy(logits, labels)[0]/100
+            top1.update(acc, len(labels))
+    
     #######################
     # END OF YOUR CODE    #
     #######################
 
+    
+
     print(
-        f"Zero-shot CLIP top-1 accuracy on {args.dataset}/{args.split}: {top1.val*100}"
+        f"Zero-shot CLIP top-1 accuracy on {args.dataset}/{args.split}: {top1.val.cpu().numpy()*100}"  # type: ignore
     )
 
 

@@ -37,8 +37,8 @@ def set_seed(seed):
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True # type: ignore
+    torch.backends.cudnn.benchmark = False  # type: ignore
 
 
 def get_model(num_classes=100):
@@ -67,7 +67,7 @@ def get_model(num_classes=100):
 
     model.fc = nn.Linear(fc_features_in, fc_features_out)
     model.fc.weight = nn.init.normal_(model.fc.weight, mean=0.0, std=0.01)    
-    model.fc.bias = nn.init.zeros_(model.fc.bias)
+    model.fc.bias = nn.init.zeros_(model.fc.bias)  # type: ignore
 
 
     #######################
@@ -120,11 +120,11 @@ def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device
     # Load the datasets
     train_data, validation_data = get_train_validation_set(data_dir, augmentation_name=augmentation_name)
 
-    trainLoader = torch.utils.data.DataLoader(
+    trainLoader = torch.utils.data.DataLoader( # type: ignore
         train_data, batch_size, shuffle=True, drop_last = True)
 
 
-    valLoader = torch.utils.data.DataLoader(
+    valLoader = torch.utils.data.DataLoader(  # type: ignore
         validation_data, batch_size, shuffle=True, drop_last = False)
 
     data = {
@@ -244,7 +244,7 @@ def main(lr, batch_size, epochs, data_dir, seed, augmentation_name):
 
     # Evaluate the model on the test set
     test_data = get_test_set(data_dir)
-    testLoader = torch.utils.data.DataLoader(
+    testLoader = torch.utils.data.DataLoader( #type: ignore
       test_data, batch_size, shuffle=True, drop_last = False)
     
     accuracy = evaluate_model(model, testLoader, device)
