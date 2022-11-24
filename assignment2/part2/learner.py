@@ -67,7 +67,12 @@ class Learner:
         # Note: You need to keep the visual prompt's parameters trainable
         # Hint: Check for "prompt_learner" in the parameters' names
 
-        raise NotImplementedError
+        for name, param in self.vpt.named_parameters():
+            if "prompt_learner" in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
+        
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -190,7 +195,6 @@ class Learner:
             [batch_time, data_time, losses, top1],
             prefix="Epoch: [{}]".format(epoch),
         )
-
         # Switch to train mode
         self.vpt.train()
 
@@ -219,8 +223,19 @@ class Learner:
             # - Compute the loss (using self.criterion)
             # - Perform a backward pass
             # - Update the parameters
+            
+            self.optimizer.zero_grad()
 
-            raise NotImplementedError
+            images = images.to(self.device)
+            target = target.to(self.device)
+
+            output = self.vpt(images)
+            loss = self.criterion(output, target)
+            with torch.autograd.set_detect_anomaly(True):
+                loss.backward(retain_graph=True)
+
+            self.optimizer.step()
+            
             #######################
             # END OF YOUR CODE    #
             #######################
@@ -285,7 +300,12 @@ class Learner:
                 # - Forward pass (using self.vpt)
                 # - Compute the loss (using self.criterion)
 
-                raise NotImplementedError
+                images.to(self.device)
+                target.to(self.device)
+
+                output = self.vpt(images)
+                loss = self.criterion(output)
+
                 #######################
                 # END OF YOUR CODE    #
                 #######################

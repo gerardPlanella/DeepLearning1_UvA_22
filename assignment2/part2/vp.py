@@ -29,6 +29,8 @@ class PadPrompter(nn.Module):
         super(PadPrompter, self).__init__()
         pad_size = args.prompt_size
         image_size = args.image_size
+        
+        
 
         #######################
         # PUT YOUR CODE HERE  #
@@ -41,8 +43,19 @@ class PadPrompter(nn.Module):
         # - See Fig 2(c) in the assignment to get a sense of how each of these should look like.
         # - Shape of self.pad_up and self.pad_down should be (1, 3, pad_size, image_size)
         # - See Fig 2.(g)/(h) and think about the shape of self.pad_left and self.pad_right
+        
+        self.pad_up = nn.Parameter(torch.randn(1, 3, pad_size, image_size), requires_grad = True)
+        self.pad_down = nn.Parameter(torch.randn(1, 3, pad_size, image_size), requires_grad = True)
 
-        raise NotImplementedError
+        #Shape of pad_left = (1, 3, h, w), w = pad_size, h = image_size - 2*pad_size
+        w = pad_size
+        h = image_size - (2*pad_size)
+        
+        self.pad_left = nn.Parameter(torch.randn(1, 3, h, w), requires_grad = True)
+        self.pad_right = nn.Parameter(torch.randn(1, 3, h, w), requires_grad = True)
+
+        self.device = args.device
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -58,7 +71,18 @@ class PadPrompter(nn.Module):
         # - It is always advisable to implement and then visualize if
         #   your prompter does what you expect it to do.
 
-        raise NotImplementedError
+        pad_size = self.pad_up.shape[2]
+        prompt = torch.zeros(x.shape)
+        prompt[:, :, 0:pad_size, :] = self.pad_up
+        prompt[:, :, x.shape[2] - pad_size:x.shape[2], :] = self.pad_down
+
+        prompt[:, :, pad_size: x.shape[2] - pad_size, :pad_size] = self.pad_left
+        prompt[:, :, pad_size: x.shape[2] - pad_size, x.shape[3] - pad_size:] = self.pad_right
+
+        x = x.to(self.device)
+        prompt = prompt.to(self.device)
+    
+        return x + prompt
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -88,8 +112,9 @@ class FixedPatchPrompter(nn.Module):
         #     (3 for the RGB channels)
         # - You can define variable parameters using torch.nn.Parameter
         # - You can initialize the patch randomly in N(0, 1) using torch.randn
-
-        raise NotImplementedError
+    
+        self.patch = nn.Parameter(torch.randn(1, 3, args.prompt_size, args.prompt_size), requires_grad = True)
+        self.device = args.device
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -104,8 +129,14 @@ class FixedPatchPrompter(nn.Module):
         # - First define the prompt. Then add it to the batch of images.
         # - It is always advisable to implement and then visualize if
         #   your prompter does what you expect it to do.
+        patch_size = self.patch.shape[2]
+        prompt = torch.zeros(x.shape)
+        prompt[:, :, 0:patch_size, 0:patch_size] = self.patch
 
-        raise NotImplementedError
+        x = x.to(self.device)
+        prompt = prompt.to(self.device)
+
+        return x + prompt
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -136,7 +167,8 @@ class RandomPatchPrompter(nn.Module):
         # - You can define variable parameters using torch.nn.Parameter
         # - You can initialize the patch randomly in N(0, 1) using torch.randn
 
-        raise NotImplementedError
+        self.patch = nn.Parameter(torch.randn(1, 3, args.prompt_size, args.prompt_size), requires_grad = True)
+        self.device = args.device
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -154,7 +186,18 @@ class RandomPatchPrompter(nn.Module):
         # - It is always advisable to implement and then visualize if
         #   your prompter does what you expect it to do.
 
-        raise NotImplementedError
+        patch_size = self.patch.shape[2]
+        origin = np.random.randint(low=0, high=x.shape[2] - patch_size)
+
+        patch_size = self.patch.shape[2]
+        prompt = torch.zeros(x.shape)
+        prompt[:, :, origin:origin + patch_size, origin: origin + patch_size] = self.patch
+
+        x = x.to(self.device)
+        prompt = prompt.to(self.device)
+
+        return x + prompt
+
         #######################
         # END OF YOUR CODE    #
         #######################

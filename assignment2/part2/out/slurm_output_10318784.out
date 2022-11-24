@@ -1,8 +1,0 @@
-usage: Zero-shot CLIP [-h] [--seed SEED] [--batch_size BATCH_SIZE]
-                      [--num_workers NUM_WORKERS] [--model MODEL]
-                      [--arch {ViT-B/32,ViT-B/16}] [--root ROOT]
-                      [--dataset {cifar10,cifar100}] [--split {train,test}]
-                      [--test_noise] [--prompt_template PROMPT_TEMPLATE]
-                      [--class_names CLASS_NAMES [CLASS_NAMES ...]]
-                      [--visualize_predictions]
-Zero-shot CLIP: error: argument --visualize_predictions: ignored explicit argument 'True'
