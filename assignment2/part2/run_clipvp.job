@@ -30,10 +30,10 @@ root=/scratch/$USER
 mkdir -p $root
 
 datasets=(cifar10)
-methods=(random_patch)
-#methods=(padding)
-#prompt_sizes=(1)
-prompt_sizes=(30)
+#methods=(random_patch)
+methods=(fixed_patch)
+prompt_sizes=(1)
+#prompt_sizes=(30)
 
 for dataset in "${datasets[@]}"; do
     for i in "${!methods[@]}"; do
@@ -47,7 +47,6 @@ for dataset in "${datasets[@]}"; do
             --epochs $epochs \
             --method $method \
             --prompt_size $prompt_size \
-            --root $root \
-            --visualize_prompt
+            --root $root 
     done
 done

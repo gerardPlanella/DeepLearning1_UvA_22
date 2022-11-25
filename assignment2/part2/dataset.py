@@ -16,7 +16,7 @@
 
 """Defines helper functions for loading data and constructing dataloaders."""
 from torchvision.datasets import CIFAR10, CIFAR100
-from torchvision.transforms import Compose
+from torchvision.transforms import Compose, Normalize
 from torch.utils.data import DataLoader, random_split
 import torch
 
@@ -40,7 +40,9 @@ class AddGaussianNoise(torch.nn.Module):
         # - Then, you can transform z s.t. it is sampled from N(self.mean, self.std)
         # - Finally, you can add the noise to the image.
 
-        raise NotImplementedError
+        noise = torch.randn_like(img)
+        norm = Normalize(self.mean, self.std)
+        return norm(noise) + img
         #######################
         # END OF YOUR CODE    #
         #######################

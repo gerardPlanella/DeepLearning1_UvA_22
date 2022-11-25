@@ -89,7 +89,7 @@ class CustomCLIP(nn.Module):
         with torch.no_grad():
             text_features = clip_model.encode_text(text_inputs)
         
-        text_features /= text_features.norm(dim = -1, keepdim = True)
+        text_features = text_features / text_features.norm(dim = -1, keepdim = True)
         
         #######################
         # END OF YOUR CODE    #
@@ -125,7 +125,7 @@ class CustomCLIP(nn.Module):
         prompted_image = self.prompt_learner.to(self.device)(image)
         image_features = self.clip_model.encode_image(prompted_image)
         
-        image_features /= image_features.norm(dim=-1, keepdim=True)
+        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
         similarity = (100.0 * image_features @ self.text_features.T).softmax(dim=-1)
         logits = similarity*self.logit_scale
         return logits

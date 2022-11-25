@@ -174,14 +174,10 @@ def main():
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        # TODO: Define `classnames` as a list of 10 + 100 class labels from CIFAR10 and CIFAR100
-
-        raise NotImplementedError
+        classnames = cifar10_test.classes + cifar100_test.classes
         #######################
         # END OF YOUR CODE    #
         #######################
-
-        classnames = cifar10_test.classes + cifar100_test.classes
 
         # 5. Load the clip model
         print(f"Loading CLIP (backbone: {args.arch})")
@@ -204,7 +200,12 @@ def main():
         # TODO: Compute the text features (for each of the prompts defined above) using CLIP
         # Note: This is similar to the code you wrote in `clipzs.py`
 
-        raise NotImplementedError
+        text_inputs = clip.tokenize(prompts).to(args.device)
+
+        with torch.no_grad():
+            text_features = clip_model.encode_text(text_inputs)
+        
+        text_features = text_features / text_features.norm(dim = -1, keepdim = True)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -220,7 +221,9 @@ def main():
         # That is, if a class in CIFAR100 corresponded to '4', it should now correspond to '14'
         # Set the result of this to the attribute cifar100_test.targets to override them
 
-        raise NotImplementedError
+        for target in cifar100_test.targets:
+            target = target + 10
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -250,15 +253,17 @@ def main():
         # TODO: Compute the weighted average of the above two accuracies
 
         # Hint:
-        # - accurary_all = acc_cifar10 * (% of cifar10 samples) \
+        # - accuracy_all = acc_cifar10 * (% of cifar10 samples) \
         #                  + acc_cifar100 * (% of cifar100 samples)
-
-        raise NotImplementedError
+        n_samples_cifar10 = cifar10_test.dataset
+        n_samples_cifar100 = cifar100_test.dataset
+        n_samples = n_samples_cifar100 + n_samples_cifar10
+        accuracy_all = acc_cifar10 * (n_samples_cifar10 / n_samples)  * (n_samples_cifar100 / n_samples)
         #######################
         # END OF YOUR CODE    #
         #######################
 
-        print(f"TOP1 Accuracy on cifra10 + cifar100 is: {accuracy_all}")
+        print(f"TOP1 Accuracy on cifar10 + cifar100 is: {accuracy_all}")
         exit()
     else:
         raise ValueError("Enable flag --evaluate!")

@@ -300,11 +300,11 @@ class Learner:
                 # - Forward pass (using self.vpt)
                 # - Compute the loss (using self.criterion)
 
-                images.to(self.device)
-                target.to(self.device)
+                images = images.to(self.device)
+                target = target.to(self.device)
 
                 output = self.vpt(images)
-                loss = self.criterion(output)
+                loss = self.criterion(output, target)
 
                 #######################
                 # END OF YOUR CODE    #
