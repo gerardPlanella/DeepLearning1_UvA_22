@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #SBATCH --partition=gpu_shared_course
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --job-name=CLIPVP-CIFAR10
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=3
 #SBATCH --time=04:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=out/2.2b/slurm_output_%A_padding_cifar_100_50.out
+#SBATCH --output=out/2.4/slurm_output_%A_cross_dataset_padding_cifar10.out
 
 
 module purge
@@ -30,11 +30,11 @@ dataset="cifar100"
 root=/scratch/$USER
 mkdir -p $root
 
-datasets=(cifar100)
+datasets=(cifar10)
 #methods=(random_patch)
 #methods=(fixed_patch)
 methods=(padding)
-prompt_sizes=(50)
+prompt_sizes=(1)
 #prompt_sizes=(30)
 
 for dataset in "${datasets[@]}"; do
@@ -42,7 +42,7 @@ for dataset in "${datasets[@]}"; do
         method=${methods[$i]}
         prompt_size=${prompt_sizes[$i]}
         echo "Running experiment on $dataset with $method and prompt size $prompt_size"
-        python $code_dir/main.py \
+        python $code_dir/cross_dataset.py \
             --dataset $dataset \
             --arch $arch \
             --text_prompt_template "$text_prompt_template" \
@@ -50,7 +50,7 @@ for dataset in "${datasets[@]}"; do
             --method $method \
             --prompt_size $prompt_size \
             --root $root \
-            --model_dir "./save/models/aux"
-            
+            --evaluate \
+            --resume $code_dir/save/models/padding_1_cifar10_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/checkpoint.pth.tar
     done
 done

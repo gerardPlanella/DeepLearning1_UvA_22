@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=3
 #SBATCH --time=04:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=out/2.2b/slurm_output_%A_padding_cifar_100_50.out
+#SBATCH --output=out/2.3/slurm_output_%A_robustness_random_cifar_100.out
 
 
 module purge
@@ -31,10 +31,10 @@ root=/scratch/$USER
 mkdir -p $root
 
 datasets=(cifar100)
-#methods=(random_patch)
-#methods=(fixed_patch)
 methods=(padding)
-prompt_sizes=(50)
+#methods=(fixed_patch)
+#methods=(padding)
+prompt_sizes=(1)
 #prompt_sizes=(30)
 
 for dataset in "${datasets[@]}"; do
@@ -42,7 +42,7 @@ for dataset in "${datasets[@]}"; do
         method=${methods[$i]}
         prompt_size=${prompt_sizes[$i]}
         echo "Running experiment on $dataset with $method and prompt size $prompt_size"
-        python $code_dir/main.py \
+        python $code_dir/robustness.py \
             --dataset $dataset \
             --arch $arch \
             --text_prompt_template "$text_prompt_template" \
@@ -50,7 +50,9 @@ for dataset in "${datasets[@]}"; do
             --method $method \
             --prompt_size $prompt_size \
             --root $root \
-            --model_dir "./save/models/aux"
-            
+            --evaluate \
+            --test_noise \
+            --resume $code_dir/save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/checkpoint.pth.tar
+
     done
 done

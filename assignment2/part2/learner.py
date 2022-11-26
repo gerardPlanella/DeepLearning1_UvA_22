@@ -231,8 +231,8 @@ class Learner:
 
             output = self.vpt(images)
             loss = self.criterion(output, target)
-            with torch.autograd.set_detect_anomaly(True):
-                loss.backward(retain_graph=True)
+       
+            loss.backward(retain_graph=True)
 
             self.optimizer.step()
             

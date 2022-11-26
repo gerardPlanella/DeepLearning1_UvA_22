@@ -398,7 +398,7 @@ def main():
     
 
     print(
-        f"Zero-shot CLIP top-1 accuracy on {args.dataset}/{args.split}: {top1.val.cpu().numpy()*100}"  # type: ignore
+        f"Zero-shot CLIP top-1 accuracy on {args.dataset}/{args.split}: {top1.avg.cpu().numpy()*100}"  # type: ignore
     )
 
 

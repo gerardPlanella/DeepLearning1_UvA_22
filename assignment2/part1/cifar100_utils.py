@@ -20,6 +20,36 @@ from torchvision.datasets import CIFAR100
 from torch.utils.data import random_split
 from torchvision import transforms
 
+from torchvision.transforms import Normalize
+
+
+class AddGaussianNoise(torch.nn.Module):
+    def __init__(self, mean=0., std=0.1):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, img):
+        #######################
+        # PUT YOUR CODE HERE  #
+        #######################
+
+        # TODO: Given a batch of images, add Gaussian noise to each image.
+
+        # Hints:
+        # - You can use torch.randn() to sample z ~ N(0, 1).
+        # - Then, you can transform z s.t. it is sampled from N(self.mean, self.std)
+        # - Finally, you can add the noise to the image.
+
+        noise = torch.randn_like(img)
+        norm = Normalize(self.mean, self.std)
+        return norm(noise) + img
+        #######################
+        # END OF YOUR CODE    #
+        #######################
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
+    
 
 def add_augmentation(augmentation_name, transform_list):
     """
@@ -40,6 +70,8 @@ def add_augmentation(augmentation_name, transform_list):
         transform_list.insert(0, transforms.RandomHorizontalFlip())
     if "colorjitter" in augmentations:
         transform_list.insert(0, transforms.ColorJitter())
+    if "addnoise" in augmentations:
+        transform_list.append(AddGaussianNoise())
 
     #######################
     # END OF YOUR CODE    #

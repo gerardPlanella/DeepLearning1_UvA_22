@@ -1,0 +1,116 @@
+Downloading https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz to /scratch/lcur0640/cifar-100-python.tar.gz
+  0%|          | 0/169001437 [00:00<?, ?it/s]  0%|          | 65536/169001437 [00:00<08:13, 342159.46it/s]  0%|          | 131072/169001437 [00:00<08:18, 338874.96it/s]  0%|          | 262144/169001437 [00:00<04:30, 624707.97it/s]  0%|          | 819200/169001437 [00:00<01:41, 1659291.33it/s]  1%|          | 1802240/169001437 [00:00<00:45, 3709395.30it/s]  2%|▏         | 3571712/169001437 [00:00<00:22, 7401777.63it/s]  3%|▎         | 5373952/169001437 [00:00<00:15, 10300013.21it/s]  4%|▍         | 7143424/169001437 [00:01<00:13, 12375981.11it/s]  5%|▌         | 9142272/169001437 [00:01<00:11, 14518779.76it/s]  7%|▋         | 11141120/169001437 [00:01<00:09, 16086922.41it/s]  8%|▊         | 12976128/169001437 [00:01<00:09, 16740902.61it/s]  9%|▉         | 14974976/169001437 [00:01<00:08, 17688454.20it/s] 10%|█         | 17039360/169001437 [00:01<00:08, 18526176.56it/s] 11%|█▏        | 19234816/169001437 [00:01<00:07, 19502080.08it/s] 13%|█▎        | 21463040/169001437 [00:01<00:07, 20317681.90it/s] 14%|█▍        | 23789568/169001437 [00:01<00:06, 21190206.17it/s] 16%|█▌        | 26214400/169001437 [00:02<00:07, 19937244.94it/s] 17%|█▋        | 28606464/169001437 [00:02<00:07, 19507018.68it/s] 18%|█▊        | 31162368/169001437 [00:02<00:06, 21090195.79it/s] 20%|█▉        | 33751040/169001437 [00:02<00:06, 21843782.82it/s] 22%|██▏       | 36503552/169001437 [00:02<00:05, 23417659.74it/s] 23%|██▎       | 39419904/169001437 [00:02<00:05, 25027414.87it/s] 25%|██▌       | 42467328/169001437 [00:02<00:04, 26593834.34it/s] 27%|██▋       | 45514752/169001437 [00:02<00:04, 27720205.97it/s] 29%|██▊       | 48332800/169001437 [00:02<00:04, 27090497.55it/s] 30%|███       | 51347456/169001437 [00:02<00:04, 27964255.39it/s] 32%|███▏      | 54427648/169001437 [00:03<00:03, 28746035.26it/s] 34%|███▍      | 57540608/169001437 [00:03<00:03, 29427090.19it/s] 36%|███▌      | 60555264/169001437 [00:03<00:03, 29580563.52it/s] 38%|███▊      | 63700992/169001437 [00:03<00:03, 29859565.49it/s] 40%|███▉      | 66945024/169001437 [00:03<00:03, 30606367.39it/s] 42%|████▏     | 70189056/169001437 [00:03<00:03, 31137492.73it/s] 43%|████▎     | 73334784/169001437 [00:03<00:03, 30712377.81it/s] 45%|████▌     | 76644352/169001437 [00:03<00:02, 31363068.51it/s] 47%|████▋     | 79921152/169001437 [00:03<00:02, 31778236.61it/s] 49%|████▉     | 83132416/169001437 [00:03<00:02, 31732840.34it/s] 51%|█████     | 86310912/169001437 [00:04<00:02, 31530318.03it/s] 53%|█████▎    | 89489408/169001437 [00:04<00:02, 31396671.51it/s] 55%|█████▍    | 92635136/169001437 [00:04<00:02, 31055117.42it/s] 57%|█████▋    | 95748096/169001437 [00:04<00:02, 30945364.13it/s] 58%|█████▊    | 98861056/169001437 [00:04<00:02, 30708747.31it/s] 60%|██████    | 101941248/169001437 [00:04<00:02, 30624804.04it/s] 62%|██████▏   | 105054208/169001437 [00:04<00:02, 30593406.73it/s] 64%|██████▍   | 108232704/169001437 [00:04<00:01, 30939974.95it/s] 66%|██████▌   | 111509504/169001437 [00:04<00:01, 31468111.10it/s] 68%|██████▊   | 114688000/169001437 [00:05<00:01, 31271641.76it/s] 70%|██████▉   | 117833728/169001437 [00:05<00:01, 31176081.51it/s] 72%|███████▏  | 120979456/169001437 [00:05<00:01, 30302946.81it/s] 73%|███████▎  | 124092416/169001437 [00:05<00:01, 30439572.85it/s] 75%|███████▌  | 127369216/169001437 [00:05<00:01, 31100505.58it/s] 77%|███████▋  | 130613248/169001437 [00:05<00:01, 30317811.91it/s] 79%|███████▉  | 133758976/169001437 [00:05<00:01, 30412137.45it/s] 81%|████████  | 136839168/169001437 [00:05<00:01, 30358212.85it/s] 83%|████████▎ | 140017664/169001437 [00:05<00:00, 30764973.77it/s] 85%|████████▍ | 143294464/169001437 [00:05<00:00, 31332656.99it/s] 87%|████████▋ | 146505728/169001437 [00:06<00:00, 31528412.93it/s] 89%|████████▊ | 149684224/169001437 [00:06<00:00, 31220901.17it/s] 90%|█████████ | 152829952/169001437 [00:06<00:00, 30147697.38it/s] 92%|█████████▏| 156106752/169001437 [00:06<00:00, 30881893.46it/s] 94%|█████████▍| 159350784/169001437 [00:06<00:00, 31307786.85it/s] 96%|█████████▌| 162496512/169001437 [00:06<00:00, 31281827.73it/s] 98%|█████████▊| 165642240/169001437 [00:06<00:00, 31215489.59it/s]100%|█████████▉| 168787968/169001437 [00:06<00:00, 31111223.98it/s]100%|██████████| 169001437/169001437 [00:06<00:00, 24982767.36it/s]
+/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 12 worker processes in total. Our suggested max number of worker in current system is 3, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Extracting /scratch/lcur0640/cifar-100-python.tar.gz to /scratch/lcur0640
+Using prompt template: This is a photo of a {}
+Using device: cuda
+Loading CLIP (backbone: ViT-B/32)
+  0%|                                               | 0.00/338M [00:00<?, ?iB/s]  2%|▋                                     | 5.93M/338M [00:00<00:05, 62.2MiB/s]  6%|██▍                                    | 21.3M/338M [00:00<00:02, 120MiB/s] 11%|████▏                                  | 36.2M/338M [00:00<00:02, 137MiB/s] 15%|█████▋                                 | 49.3M/338M [00:00<00:02, 133MiB/s] 19%|███████▎                               | 62.8M/338M [00:00<00:02, 136MiB/s] 23%|████████▉                              | 77.5M/338M [00:00<00:01, 142MiB/s] 27%|██████████▌                            | 91.9M/338M [00:00<00:01, 145MiB/s] 31%|████████████▌                           | 106M/338M [00:00<00:01, 144MiB/s] 35%|██████████████▏                         | 120M/338M [00:00<00:01, 142MiB/s] 39%|███████████████▊                        | 133M/338M [00:01<00:01, 141MiB/s] 44%|█████████████████▌                      | 148M/338M [00:01<00:01, 146MiB/s] 48%|███████████████████▏                    | 162M/338M [00:01<00:01, 146MiB/s] 53%|█████████████████████                   | 178M/338M [00:01<00:01, 151MiB/s] 57%|██████████████████████▊                 | 192M/338M [00:01<00:01, 150MiB/s] 62%|████████████████████████▋               | 208M/338M [00:01<00:00, 155MiB/s] 66%|██████████████████████████▍             | 223M/338M [00:01<00:00, 153MiB/s] 71%|████████████████████████████▏           | 238M/338M [00:01<00:00, 155MiB/s] 75%|█████████████████████████████▉          | 253M/338M [00:01<00:00, 130MiB/s] 79%|███████████████████████████████▌        | 266M/338M [00:02<00:00, 124MiB/s] 82%|████████████████████████████████▉       | 278M/338M [00:02<00:00, 116MiB/s] 86%|██████████████████████████████████▎     | 290M/338M [00:02<00:00, 104MiB/s] 89%|██████████████████████████████████▋    | 300M/338M [00:02<00:00, 97.6MiB/s] 92%|███████████████████████████████████▊   | 310M/338M [00:02<00:00, 94.6MiB/s] 94%|████████████████████████████████████▊  | 319M/338M [00:02<00:00, 93.1MiB/s] 97%|█████████████████████████████████████▉ | 328M/338M [00:02<00:00, 90.9MiB/s]100%|██████████████████████████████████████▉| 337M/338M [00:02<00:00, 88.7MiB/s]100%|████████████████████████████████████████| 338M/338M [00:02<00:00, 123MiB/s]
+
+
+List of prompts:
+['This is a photo of a apple',
+ 'This is a photo of a aquarium fish',
+ 'This is a photo of a baby',
+ 'This is a photo of a bear',
+ 'This is a photo of a beaver',
+ 'This is a photo of a bed',
+ 'This is a photo of a bee',
+ 'This is a photo of a beetle',
+ 'This is a photo of a bicycle',
+ 'This is a photo of a bottle',
+ 'This is a photo of a bowl',
+ 'This is a photo of a boy',
+ 'This is a photo of a bridge',
+ 'This is a photo of a bus',
+ 'This is a photo of a butterfly',
+ 'This is a photo of a camel',
+ 'This is a photo of a can',
+ 'This is a photo of a castle',
+ 'This is a photo of a caterpillar',
+ 'This is a photo of a cattle',
+ 'This is a photo of a chair',
+ 'This is a photo of a chimpanzee',
+ 'This is a photo of a clock',
+ 'This is a photo of a cloud',
+ 'This is a photo of a cockroach',
+ 'This is a photo of a couch',
+ 'This is a photo of a crab',
+ 'This is a photo of a crocodile',
+ 'This is a photo of a cup',
+ 'This is a photo of a dinosaur',
+ 'This is a photo of a dolphin',
+ 'This is a photo of a elephant',
+ 'This is a photo of a flatfish',
+ 'This is a photo of a forest',
+ 'This is a photo of a fox',
+ 'This is a photo of a girl',
+ 'This is a photo of a hamster',
+ 'This is a photo of a house',
+ 'This is a photo of a kangaroo',
+ 'This is a photo of a keyboard',
+ 'This is a photo of a lamp',
+ 'This is a photo of a lawn mower',
+ 'This is a photo of a leopard',
+ 'This is a photo of a lion',
+ 'This is a photo of a lizard',
+ 'This is a photo of a lobster',
+ 'This is a photo of a man',
+ 'This is a photo of a maple tree',
+ 'This is a photo of a motorcycle',
+ 'This is a photo of a mountain',
+ 'This is a photo of a mouse',
+ 'This is a photo of a mushroom',
+ 'This is a photo of a oak tree',
+ 'This is a photo of a orange',
+ 'This is a photo of a orchid',
+ 'This is a photo of a otter',
+ 'This is a photo of a palm tree',
+ 'This is a photo of a pear',
+ 'This is a photo of a pickup truck',
+ 'This is a photo of a pine tree',
+ 'This is a photo of a plain',
+ 'This is a photo of a plate',
+ 'This is a photo of a poppy',
+ 'This is a photo of a porcupine',
+ 'This is a photo of a possum',
+ 'This is a photo of a rabbit',
+ 'This is a photo of a raccoon',
+ 'This is a photo of a ray',
+ 'This is a photo of a road',
+ 'This is a photo of a rocket',
+ 'This is a photo of a rose',
+ 'This is a photo of a sea',
+ 'This is a photo of a seal',
+ 'This is a photo of a shark',
+ 'This is a photo of a shrew',
+ 'This is a photo of a skunk',
+ 'This is a photo of a skyscraper',
+ 'This is a photo of a snail',
+ 'This is a photo of a snake',
+ 'This is a photo of a spider',
+ 'This is a photo of a squirrel',
+ 'This is a photo of a streetcar',
+ 'This is a photo of a sunflower',
+ 'This is a photo of a sweet pepper',
+ 'This is a photo of a table',
+ 'This is a photo of a tank',
+ 'This is a photo of a telephone',
+ 'This is a photo of a television',
+ 'This is a photo of a tiger',
+ 'This is a photo of a tractor',
+ 'This is a photo of a train',
+ 'This is a photo of a trout',
+ 'This is a photo of a tulip',
+ 'This is a photo of a turtle',
+ 'This is a photo of a wardrobe',
+ 'This is a photo of a whale',
+ 'This is a photo of a willow tree',
+ 'This is a photo of a wolf',
+ 'This is a photo of a woman',
+ 'This is a photo of a worm']
+Precomputing text features
+Iterating over train set of cifar100
+Starting inference...
+Zero-shot CLIP top-1 accuracy on cifar100/train: [63.559998]
