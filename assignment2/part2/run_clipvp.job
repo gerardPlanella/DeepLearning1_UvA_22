@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=3
 #SBATCH --time=04:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=out/2.2b/slurm_output_%A_padding_cifar_100_50.out
+#SBATCH --output=out/2.2b/slurm_output_%A_inverse_padding_cifar_112_220.out
 
 
 module purge
@@ -33,8 +33,8 @@ mkdir -p $root
 datasets=(cifar100)
 #methods=(random_patch)
 #methods=(fixed_patch)
-methods=(padding)
-prompt_sizes=(50)
+methods=(inverse_padding)
+prompt_sizes=(220)
 #prompt_sizes=(30)
 
 for dataset in "${datasets[@]}"; do

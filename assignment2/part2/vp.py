@@ -20,6 +20,69 @@ import torch.nn as nn
 import numpy as np
 
 
+class InversePadPrompter(nn.Module):
+    """
+    Defines visual-prompt as a parametric padding over an image.
+    For refernece, this prompt should look like Fig 2(c) in the PDF.
+    """
+    def __init__(self, args):
+        super(InversePadPrompter, self).__init__()
+        pad_size = args.prompt_size
+        image_size = args.image_size
+        
+        
+
+        #######################
+        # PUT YOUR CODE HERE  #
+        #######################
+
+        # TODO: Define the padding as variables self.pad_left, self.pad_right, self.pad_up, self.pad_down
+
+        # Hints:
+        # - Each of these are parameters that we need to learn. So how would you define them in torch?
+        # - See Fig 2(c) in the assignment to get a sense of how each of these should look like.
+        # - Shape of self.pad_up and self.pad_down should be (1, 3, pad_size, image_size)
+        # - See Fig 2.(g)/(h) and think about the shape of self.pad_left and self.pad_right
+        
+        self.pad = nn.Parameter(torch.randn(1, 3, pad_size, pad_size), requires_grad = True)
+
+
+        self.device = args.device
+
+        #######################
+        # END OF YOUR CODE    #
+        #######################
+
+    def forward(self, x):
+        #######################
+        # PUT YOUR CODE HERE  #
+        #######################
+        # TODO: For a given batch of images, add the prompt as a padding to the image.
+
+        # Hints:
+        # - First define the prompt. Then add it to the batch of images.
+        # - It is always advisable to implement and then visualize if
+        #   your prompter does what you expect it to do.
+
+        pad_size = self.pad.shape[2]
+        image_width = x.shape[2]
+        image_height = x.shape[3]
+        prompt = torch.zeros(x.shape)
+
+        origin_h = (image_height -pad_size) // 2
+        origin_w = (image_width - pad_size) // 2
+
+        prompt[:, :, origin_h: origin_h + pad_size, origin_w: origin_w + pad_size] = self.pad
+
+        x = x.to(self.device)
+        prompt = prompt.to(self.device)
+    
+        return x + prompt
+        #######################
+        # END OF YOUR CODE    #
+        #######################
+
+
 class PadPrompter(nn.Module):
     """
     Defines visual-prompt as a parametric padding over an image.

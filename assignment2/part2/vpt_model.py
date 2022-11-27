@@ -26,6 +26,7 @@ from vp import (
     PadPrompter,
     RandomPatchPrompter,
     FixedPatchPrompter,
+    InversePadPrompter,
 )
 
 
@@ -33,6 +34,7 @@ PROMPT_TYPES = {
     "padding": PadPrompter,
     "random_patch": RandomPatchPrompter,
     "fixed_patch": FixedPatchPrompter,
+    "inverse_padding":InversePadPrompter,
 }
 
 
