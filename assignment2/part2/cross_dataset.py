@@ -255,8 +255,8 @@ def main():
         # Hint:
         # - accuracy_all = acc_cifar10 * (% of cifar10 samples) \
         #                  + acc_cifar100 * (% of cifar100 samples)
-        n_samples_cifar10 = cifar10_test.dataset
-        n_samples_cifar100 = cifar100_test.dataset
+        n_samples_cifar10 = len(cifar10_test)
+        n_samples_cifar100 = len(cifar100_test)
         n_samples = n_samples_cifar100 + n_samples_cifar10
         accuracy_all = acc_cifar10 * (n_samples_cifar10 / n_samples)  * (n_samples_cifar100 / n_samples)
         #######################
