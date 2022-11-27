@@ -1,0 +1,131 @@
+Running experiment on cifar100 with padding and prompt size 1
+Namespace(print_freq=10, save_freq=50, batch_size=128, num_workers=16, epochs=20, square_size=8, optim='sgd', learning_rate=40, weight_decay=0, warmup=1000, momentum=0.9, patience=1000, model='clip', arch='ViT-B/32', method='padding', prompt_size=1, text_prompt_template='This is a photo of a {}', root='/scratch/lcur0640', dataset='cifar100', image_size=224, test_noise=True, visualize_prompt=False, seed=0, model_dir='./save/models', image_dir='./save/images', filename='padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1', trial=1, resume='.//save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/model_best.pth.tar', evaluate=True, gpu=None, use_wandb=False, device='cuda', model_folder='./save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1')
+Downloading https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz to /scratch/lcur0640/cifar-100-python.tar.gz
+  0%|          | 0/169001437 [00:00<?, ?it/s]  0%|          | 65536/169001437 [00:00<08:26, 333309.78it/s]  0%|          | 163840/169001437 [00:00<06:30, 432510.05it/s]  0%|          | 327680/169001437 [00:00<03:32, 793950.51it/s]  0%|          | 655360/169001437 [00:00<01:49, 1536423.32it/s]  1%|          | 1277952/169001437 [00:00<01:03, 2648038.77it/s]  1%|▏         | 2523136/169001437 [00:00<00:34, 4826950.98it/s]  3%|▎         | 4259840/169001437 [00:00<00:20, 7926022.95it/s]  4%|▎         | 6193152/169001437 [00:01<00:14, 10982639.94it/s]  5%|▍         | 8192000/169001437 [00:01<00:11, 13473117.11it/s]  6%|▌         | 10289152/169001437 [00:01<00:10, 15595041.02it/s]  7%|▋         | 12419072/169001437 [00:01<00:09, 17229745.45it/s]  9%|▊         | 14614528/169001437 [00:01<00:08, 18602381.15it/s] 10%|█         | 16941056/169001437 [00:01<00:07, 19969266.03it/s] 11%|█▏        | 19300352/169001437 [00:01<00:07, 21033908.85it/s] 13%|█▎        | 21790720/169001437 [00:01<00:06, 22181019.69it/s] 14%|█▍        | 24477696/169001437 [00:01<00:06, 23574312.46it/s] 16%|█▌        | 27164672/169001437 [00:01<00:05, 24554557.14it/s] 18%|█▊        | 29982720/169001437 [00:02<00:05, 25632297.96it/s] 20%|█▉        | 32964608/169001437 [00:02<00:05, 26867611.54it/s] 21%|██▏       | 35913728/169001437 [00:02<00:04, 27624227.84it/s] 23%|██▎       | 38895616/169001437 [00:02<00:04, 28279818.93it/s] 25%|██▍       | 41877504/169001437 [00:02<00:04, 28734537.72it/s] 27%|██▋       | 44859392/169001437 [00:02<00:04, 29047105.65it/s] 28%|██▊       | 47972352/169001437 [00:02<00:04, 25810243.07it/s] 30%|███       | 51249152/169001437 [00:02<00:04, 27697518.50it/s] 32%|███▏      | 54394880/169001437 [00:02<00:04, 27560739.75it/s] 34%|███▍      | 57671680/169001437 [00:03<00:03, 28979866.28it/s] 36%|███▌      | 60915712/169001437 [00:03<00:03, 29937680.59it/s] 38%|███▊      | 63963136/169001437 [00:03<00:03, 30089661.47it/s] 40%|███▉      | 67010560/169001437 [00:03<00:03, 30128763.84it/s] 42%|████▏     | 70254592/169001437 [00:03<00:03, 30791323.23it/s] 43%|████▎     | 73367552/169001437 [00:03<00:03, 30810353.91it/s] 45%|████▌     | 76513280/169001437 [00:03<00:03, 30611943.35it/s] 47%|████▋     | 79757312/169001437 [00:03<00:02, 31147781.49it/s] 49%|████▉     | 83001344/169001437 [00:03<00:02, 31523496.79it/s] 51%|█████     | 86179840/169001437 [00:03<00:02, 31560656.16it/s] 53%|█████▎    | 89423872/169001437 [00:04<00:02, 31800883.03it/s] 55%|█████▍    | 92635136/169001437 [00:04<00:02, 31693134.61it/s] 57%|█████▋    | 95813632/169001437 [00:04<00:02, 31544460.93it/s] 59%|█████▊    | 98992128/169001437 [00:04<00:02, 31442914.69it/s] 60%|██████    | 102137856/169001437 [00:04<00:02, 31302914.79it/s] 62%|██████▏   | 105414656/169001437 [00:04<00:02, 31735648.49it/s] 64%|██████▍   | 108593152/169001437 [00:04<00:01, 31608421.23it/s] 66%|██████▌   | 111902720/169001437 [00:04<00:01, 32031226.14it/s] 68%|██████▊   | 115113984/169001437 [00:04<00:01, 29344311.67it/s] 70%|███████   | 118358016/169001437 [00:04<00:01, 30184084.26it/s] 72%|███████▏  | 121470976/169001437 [00:05<00:01, 29090179.22it/s] 74%|███████▍  | 124747776/169001437 [00:05<00:01, 30111978.56it/s] 76%|███████▌  | 127795200/169001437 [00:05<00:01, 30122899.94it/s] 77%|███████▋  | 130973696/169001437 [00:05<00:01, 30266649.37it/s] 79%|███████▉  | 134217728/169001437 [00:05<00:01, 30878791.61it/s] 81%|████████▏ | 137428992/169001437 [00:05<00:01, 31231118.42it/s] 83%|████████▎ | 140574720/169001437 [00:05<00:00, 30218016.02it/s] 85%|████████▌ | 143785984/169001437 [00:05<00:00, 30667334.16it/s] 87%|████████▋ | 147030016/169001437 [00:05<00:00, 31177768.40it/s] 89%|████████▉ | 150175744/169001437 [00:06<00:00, 31144065.95it/s] 91%|█████████ | 153387008/169001437 [00:06<00:00, 31422822.72it/s] 93%|█████████▎| 156565504/169001437 [00:06<00:00, 31433433.95it/s] 95%|█████████▍| 159744000/169001437 [00:06<00:00, 31357441.96it/s] 96%|█████████▋| 162889728/169001437 [00:06<00:00, 31237948.49it/s] 98%|█████████▊| 166035456/169001437 [00:06<00:00, 31152146.10it/s]100%|██████████| 169001437/169001437 [00:06<00:00, 25443784.44it/s]
+/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 16 worker processes in total. Our suggested max number of worker in current system is 3, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Extracting /scratch/lcur0640/cifar-100-python.tar.gz to /scratch/lcur0640
+Files already downloaded and verified
+Building custom CLIP
+Loading CLIP (backbone: ViT-B/32)
+  0%|                                               | 0.00/338M [00:00<?, ?iB/s]  1%|▎                                     | 2.88M/338M [00:00<00:11, 30.1MiB/s]  5%|█▊                                    | 15.8M/338M [00:00<00:03, 91.9MiB/s]  9%|███▍                                   | 29.6M/338M [00:00<00:02, 116MiB/s] 13%|████▉                                  | 42.9M/338M [00:00<00:02, 125MiB/s] 17%|██████▍                                | 56.3M/338M [00:00<00:02, 130MiB/s] 21%|████████▏                              | 70.5M/338M [00:00<00:02, 137MiB/s] 25%|█████████▋                             | 83.6M/338M [00:00<00:01, 137MiB/s] 29%|███████████▏                           | 96.7M/338M [00:00<00:01, 136MiB/s] 32%|████████████▉                           | 110M/338M [00:00<00:01, 135MiB/s] 36%|██████████████▌                         | 123M/338M [00:01<00:01, 136MiB/s] 40%|████████████████                        | 136M/338M [00:01<00:01, 136MiB/s] 44%|█████████████████▋                      | 149M/338M [00:01<00:01, 137MiB/s] 48%|███████████████████▎                    | 162M/338M [00:01<00:01, 137MiB/s] 52%|████████████████████▊                   | 176M/338M [00:01<00:01, 135MiB/s] 56%|██████████████████████▎                 | 188M/338M [00:01<00:01, 135MiB/s] 60%|███████████████████████▊                | 201M/338M [00:01<00:01, 133MiB/s] 63%|█████████████████████████▎              | 214M/338M [00:01<00:01, 129MiB/s] 67%|██████████████████████████▊             | 227M/338M [00:01<00:00, 130MiB/s] 71%|████████████████████████████▍           | 240M/338M [00:01<00:00, 133MiB/s] 75%|█████████████████████████████▉          | 253M/338M [00:02<00:00, 134MiB/s] 79%|███████████████████████████████▌        | 266M/338M [00:02<00:00, 134MiB/s] 83%|█████████████████████████████████       | 279M/338M [00:02<00:00, 133MiB/s] 86%|██████████████████████████████████▌     | 292M/338M [00:02<00:00, 132MiB/s] 90%|████████████████████████████████████    | 304M/338M [00:02<00:00, 132MiB/s] 94%|█████████████████████████████████████▌  | 317M/338M [00:02<00:00, 132MiB/s] 98%|███████████████████████████████████████ | 329M/338M [00:02<00:00, 129MiB/s]100%|████████████████████████████████████████| 338M/338M [00:02<00:00, 131MiB/s]
+List of prompts:
+['This is a photo of a apple',
+ 'This is a photo of a aquarium fish',
+ 'This is a photo of a baby',
+ 'This is a photo of a bear',
+ 'This is a photo of a beaver',
+ 'This is a photo of a bed',
+ 'This is a photo of a bee',
+ 'This is a photo of a beetle',
+ 'This is a photo of a bicycle',
+ 'This is a photo of a bottle',
+ 'This is a photo of a bowl',
+ 'This is a photo of a boy',
+ 'This is a photo of a bridge',
+ 'This is a photo of a bus',
+ 'This is a photo of a butterfly',
+ 'This is a photo of a camel',
+ 'This is a photo of a can',
+ 'This is a photo of a castle',
+ 'This is a photo of a caterpillar',
+ 'This is a photo of a cattle',
+ 'This is a photo of a chair',
+ 'This is a photo of a chimpanzee',
+ 'This is a photo of a clock',
+ 'This is a photo of a cloud',
+ 'This is a photo of a cockroach',
+ 'This is a photo of a couch',
+ 'This is a photo of a crab',
+ 'This is a photo of a crocodile',
+ 'This is a photo of a cup',
+ 'This is a photo of a dinosaur',
+ 'This is a photo of a dolphin',
+ 'This is a photo of a elephant',
+ 'This is a photo of a flatfish',
+ 'This is a photo of a forest',
+ 'This is a photo of a fox',
+ 'This is a photo of a girl',
+ 'This is a photo of a hamster',
+ 'This is a photo of a house',
+ 'This is a photo of a kangaroo',
+ 'This is a photo of a keyboard',
+ 'This is a photo of a lamp',
+ 'This is a photo of a lawn mower',
+ 'This is a photo of a leopard',
+ 'This is a photo of a lion',
+ 'This is a photo of a lizard',
+ 'This is a photo of a lobster',
+ 'This is a photo of a man',
+ 'This is a photo of a maple tree',
+ 'This is a photo of a motorcycle',
+ 'This is a photo of a mountain',
+ 'This is a photo of a mouse',
+ 'This is a photo of a mushroom',
+ 'This is a photo of a oak tree',
+ 'This is a photo of a orange',
+ 'This is a photo of a orchid',
+ 'This is a photo of a otter',
+ 'This is a photo of a palm tree',
+ 'This is a photo of a pear',
+ 'This is a photo of a pickup truck',
+ 'This is a photo of a pine tree',
+ 'This is a photo of a plain',
+ 'This is a photo of a plate',
+ 'This is a photo of a poppy',
+ 'This is a photo of a porcupine',
+ 'This is a photo of a possum',
+ 'This is a photo of a rabbit',
+ 'This is a photo of a raccoon',
+ 'This is a photo of a ray',
+ 'This is a photo of a road',
+ 'This is a photo of a rocket',
+ 'This is a photo of a rose',
+ 'This is a photo of a sea',
+ 'This is a photo of a seal',
+ 'This is a photo of a shark',
+ 'This is a photo of a shrew',
+ 'This is a photo of a skunk',
+ 'This is a photo of a skyscraper',
+ 'This is a photo of a snail',
+ 'This is a photo of a snake',
+ 'This is a photo of a spider',
+ 'This is a photo of a squirrel',
+ 'This is a photo of a streetcar',
+ 'This is a photo of a sunflower',
+ 'This is a photo of a sweet pepper',
+ 'This is a photo of a table',
+ 'This is a photo of a tank',
+ 'This is a photo of a telephone',
+ 'This is a photo of a television',
+ 'This is a photo of a tiger',
+ 'This is a photo of a tractor',
+ 'This is a photo of a train',
+ 'This is a photo of a trout',
+ 'This is a photo of a tulip',
+ 'This is a photo of a turtle',
+ 'This is a photo of a wardrobe',
+ 'This is a photo of a whale',
+ 'This is a photo of a willow tree',
+ 'This is a photo of a wolf',
+ 'This is a photo of a woman',
+ 'This is a photo of a worm']
+=> loading checkpoint './/save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/model_best.pth.tar'
+=> loaded checkpoint './/save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/model_best.pth.tar' (epoch 19)
+Turning off gradients in both the image and the text encoder
+Parameters to be updated:
+("Parameters to be updated: {'prompt_learner.pad_left', "
+ "'prompt_learner.pad_right', 'prompt_learner.pad_down', "
+ "'prompt_learner.pad_up'}")
+Number of prompt parameters:  2676
+Model evaluation w/ random noise
+  0%|          | 0/79 [00:00<?, ?it/s]  1%|▏         | 1/79 [00:08<11:19,  8.71s/it]  3%|▎         | 2/79 [00:08<04:49,  3.75s/it]  4%|▍         | 3/79 [00:09<02:43,  2.15s/it]  5%|▌         | 4/79 [00:09<01:47,  1.44s/it]  6%|▋         | 5/79 [00:09<01:16,  1.03s/it]  8%|▊         | 6/79 [00:10<00:57,  1.28it/s]  9%|▉         | 7/79 [00:10<00:45,  1.57it/s] 10%|█         | 8/79 [00:10<00:38,  1.85it/s] 11%|█▏        | 9/79 [00:11<00:33,  2.11it/s] 13%|█▎        | 10/79 [00:11<00:29,  2.34it/s] 14%|█▍        | 11/79 [00:11<00:25,  2.67it/s] 15%|█▌        | 12/79 [00:12<00:25,  2.62it/s] 16%|█▋        | 13/79 [00:12<00:24,  2.71it/s] 18%|█▊        | 14/79 [00:12<00:23,  2.77it/s] 19%|█▉        | 15/79 [00:13<00:24,  2.64it/s] 20%|██        | 16/79 [00:13<00:23,  2.71it/s] 22%|██▏       | 17/79 [00:13<00:22,  2.76it/s] 23%|██▎       | 18/79 [00:14<00:21,  2.87it/s] 24%|██▍       | 19/79 [00:14<00:20,  2.94it/s] 25%|██▌       | 20/79 [00:14<00:19,  2.97it/s] 27%|██▋       | 21/79 [00:15<00:18,  3.14it/s] 28%|██▊       | 22/79 [00:15<00:17,  3.26it/s] 29%|██▉       | 23/79 [00:15<00:16,  3.34it/s] 30%|███       | 24/79 [00:16<00:16,  3.26it/s] 32%|███▏      | 25/79 [00:16<00:17,  3.14it/s] 33%|███▎      | 26/79 [00:16<00:16,  3.26it/s] 34%|███▍      | 27/79 [00:17<00:17,  3.04it/s] 35%|███▌      | 28/79 [00:17<00:16,  3.02it/s] 37%|███▋      | 29/79 [00:17<00:17,  2.93it/s] 38%|███▊      | 30/79 [00:18<00:16,  2.89it/s] 39%|███▉      | 31/79 [00:18<00:16,  2.85it/s] 41%|████      | 32/79 [00:18<00:16,  2.94it/s] 42%|████▏     | 33/79 [00:19<00:15,  2.96it/s] 43%|████▎     | 34/79 [00:19<00:14,  3.01it/s] 44%|████▍     | 35/79 [00:19<00:14,  3.03it/s] 46%|████▌     | 36/79 [00:20<00:15,  2.83it/s] 47%|████▋     | 37/79 [00:20<00:14,  2.88it/s] 48%|████▊     | 38/79 [00:20<00:13,  2.96it/s] 49%|████▉     | 39/79 [00:21<00:13,  2.96it/s] 51%|█████     | 40/79 [00:21<00:13,  3.00it/s] 52%|█████▏    | 41/79 [00:21<00:12,  2.94it/s] 53%|█████▎    | 42/79 [00:22<00:13,  2.84it/s] 54%|█████▍    | 43/79 [00:22<00:12,  2.92it/s] 56%|█████▌    | 44/79 [00:22<00:11,  2.98it/s] 57%|█████▋    | 45/79 [00:23<00:11,  3.02it/s] 58%|█████▊    | 46/79 [00:23<00:10,  3.06it/s] 59%|█████▉    | 47/79 [00:23<00:10,  3.07it/s] 61%|██████    | 48/79 [00:24<00:09,  3.17it/s] 62%|██████▏   | 49/79 [00:24<00:08,  3.36it/s] 63%|██████▎   | 50/79 [00:24<00:08,  3.50it/s] 65%|██████▍   | 51/79 [00:24<00:07,  3.65it/s] 66%|██████▌   | 52/79 [00:25<00:07,  3.77it/s] 67%|██████▋   | 53/79 [00:25<00:06,  3.87it/s] 68%|██████▊   | 54/79 [00:25<00:06,  3.93it/s] 70%|██████▉   | 55/79 [00:25<00:06,  3.95it/s] 71%|███████   | 56/79 [00:26<00:05,  3.98it/s] 72%|███████▏  | 57/79 [00:26<00:05,  4.01it/s] 73%|███████▎  | 58/79 [00:26<00:05,  4.02it/s] 75%|███████▍  | 59/79 [00:26<00:04,  4.05it/s] 76%|███████▌  | 60/79 [00:27<00:04,  4.05it/s] 77%|███████▋  | 61/79 [00:27<00:04,  4.05it/s] 78%|███████▊  | 62/79 [00:27<00:04,  4.06it/s] 80%|███████▉  | 63/79 [00:27<00:03,  4.06it/s] 81%|████████  | 64/79 [00:28<00:03,  4.04it/s] 82%|████████▏ | 65/79 [00:28<00:03,  4.05it/s] 84%|████████▎ | 66/79 [00:28<00:03,  4.04it/s] 85%|████████▍ | 67/79 [00:28<00:02,  4.04it/s] 86%|████████▌ | 68/79 [00:29<00:02,  4.06it/s] 87%|████████▋ | 69/79 [00:29<00:02,  4.07it/s] 89%|████████▊ | 70/79 [00:29<00:02,  4.07it/s] 90%|████████▉ | 71/79 [00:29<00:01,  4.05it/s] 91%|█████████ | 72/79 [00:30<00:01,  4.05it/s] 92%|█████████▏| 73/79 [00:30<00:01,  4.06it/s] 94%|█████████▎| 74/79 [00:30<00:01,  4.05it/s] 95%|█████████▍| 75/79 [00:30<00:00,  4.07it/s] 96%|█████████▌| 76/79 [00:31<00:00,  4.06it/s] 97%|█████████▋| 77/79 [00:31<00:00,  4.07it/s] 99%|█████████▊| 78/79 [00:31<00:00,  4.08it/s]100%|██████████| 79/79 [00:31<00:00,  2.49it/s]
+Validate: [ 0/79]	Time  8.714 ( 8.714)	Loss 1.0602e+01 (1.0602e+01)	Prompt Acc@1  71.09 ( 71.09)
+Validate: [10/79]	Time  0.257 ( 1.070)	Loss 1.3531e+01 (1.3565e+01)	Prompt Acc@1  60.94 ( 60.72)
+Validate: [20/79]	Time  0.277 ( 0.724)	Loss 1.2117e+01 (1.3126e+01)	Prompt Acc@1  59.38 ( 61.20)
+Validate: [30/79]	Time  0.361 ( 0.597)	Loss 1.2516e+01 (1.3444e+01)	Prompt Acc@1  64.84 ( 61.44)
+Validate: [40/79]	Time  0.356 ( 0.534)	Loss 1.4156e+01 (1.3466e+01)	Prompt Acc@1  65.62 ( 61.79)
+Validate: [50/79]	Time  0.246 ( 0.489)	Loss 1.2586e+01 (1.3489e+01)	Prompt Acc@1  62.50 ( 61.64)
+Validate: [60/79]	Time  0.246 ( 0.449)	Loss 1.4766e+01 (1.3403e+01)	Prompt Acc@1  57.03 ( 61.85)
+Validate: [70/79]	Time  0.249 ( 0.420)	Loss 1.0617e+01 (1.3324e+01)	Prompt Acc@1  61.72 ( 61.92)
+ * Prompt Acc@1 62.090

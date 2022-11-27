@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=3
 #SBATCH --time=04:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=out/2.3/slurm_output_%A_robustness_random_cifar_100.out
+#SBATCH --output=out/2.3/slurm_output_%A_robustness_padding_cifar_100.out
 
 
 module purge
@@ -31,9 +31,9 @@ root=/scratch/$USER
 mkdir -p $root
 
 datasets=(cifar100)
-methods=(padding)
+#methods=(random_patch)
 #methods=(fixed_patch)
-#methods=(padding)
+methods=(padding)
 prompt_sizes=(1)
 #prompt_sizes=(30)
 
@@ -52,7 +52,7 @@ for dataset in "${datasets[@]}"; do
             --root $root \
             --evaluate \
             --test_noise \
-            --resume $code_dir/save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/checkpoint.pth.tar
+            --resume $code_dir/save/models/padding_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/model_best.pth.tar
 
     done
 done

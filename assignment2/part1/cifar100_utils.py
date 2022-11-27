@@ -40,9 +40,8 @@ class AddGaussianNoise(torch.nn.Module):
         # - Then, you can transform z s.t. it is sampled from N(self.mean, self.std)
         # - Finally, you can add the noise to the image.
 
-        noise = torch.randn_like(img)
-        norm = Normalize(self.mean, self.std)
-        return norm(noise) + img
+        img = img + torch.normal(self.mean, self.std, size = img.size())
+        return img
         #######################
         # END OF YOUR CODE    #
         #######################
