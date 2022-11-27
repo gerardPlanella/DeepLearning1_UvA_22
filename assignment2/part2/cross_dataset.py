@@ -258,7 +258,7 @@ def main():
         n_samples_cifar10 = len(cifar10_test)
         n_samples_cifar100 = len(cifar100_test)
         n_samples = n_samples_cifar100 + n_samples_cifar10
-        accuracy_all = acc_cifar10 * (n_samples_cifar10 / n_samples)  * (n_samples_cifar100 / n_samples)
+        accuracy_all = acc_cifar10 * (n_samples_cifar10 / n_samples)  + acc_cifar100 * (n_samples_cifar100 / n_samples)
         #######################
         # END OF YOUR CODE    #
         #######################
