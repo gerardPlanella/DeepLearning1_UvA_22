@@ -69,8 +69,6 @@ def add_augmentation(augmentation_name, transform_list):
         transform_list.insert(0, transforms.RandomHorizontalFlip())
     if "colorjitter" in augmentations:
         transform_list.insert(0, transforms.ColorJitter())
-    if "addnoise" in augmentations:
-        transform_list.append(AddGaussianNoise())
 
     #######################
     # END OF YOUR CODE    #
@@ -124,7 +122,7 @@ def get_train_validation_set(data_dir, validation_size=5000, augmentation_name=N
     return train_dataset, val_dataset
 
 
-def get_test_set(data_dir):
+def get_test_set(data_dir, addNoise = False):
     """
     Returns the test dataset of CIFAR100.
 
@@ -137,9 +135,14 @@ def get_test_set(data_dir):
     mean = (0.5071, 0.4867, 0.4408)
     std = (0.2675, 0.2565, 0.2761)
 
-    test_transform = transforms.Compose([transforms.Resize((224, 224)),
+    test_transform_list = [transforms.Resize((224, 224)),
                                         transforms.ToTensor(),
-                                        transforms.Normalize(mean, std)])
+                                        transforms.Normalize(mean, std)]
+    
+    if addNoise:
+        test_transform_list.append(AddGaussianNoise())
+
+    test_transform = transforms.Compose(test_transform_list)
 
     test_dataset = CIFAR100(root=data_dir, train=False, download=True, transform=test_transform)
     return test_dataset

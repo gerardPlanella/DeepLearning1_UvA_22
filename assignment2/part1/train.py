@@ -241,9 +241,16 @@ def main(lr, batch_size, epochs, data_dir, seed, augmentation_name):
     # Train the model
     checkpoint_name = datetime.datetime.now().strftime(f"%Y_%m_%d_%H_%M_%S_lr={lr}_augmentations={augmentation_name}_batchSize={batch_size}")
     train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name)
+    
+    augmentations = augmentation_name.split("_")
+    augmentations = [x.lower() for x in augmentations]
 
+    addNoise = False
+    if "addnoise" in augmentations:
+        addNoise = True
+        
     # Evaluate the model on the test set
-    test_data = get_test_set(data_dir)
+    test_data = get_test_set(data_dir, addNoise)
     testLoader = torch.utils.data.DataLoader( #type: ignore
       test_data, batch_size, shuffle=True, drop_last = False)
     
