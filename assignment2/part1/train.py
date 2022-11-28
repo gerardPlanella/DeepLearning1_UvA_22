@@ -242,12 +242,13 @@ def main(lr, batch_size, epochs, data_dir, seed, augmentation_name):
     checkpoint_name = datetime.datetime.now().strftime(f"%Y_%m_%d_%H_%M_%S_lr={lr}_augmentations={augmentation_name}_batchSize={batch_size}")
     train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device, augmentation_name)
     
-    augmentations = augmentation_name.split("_")
-    augmentations = [x.lower() for x in augmentations]
-
     addNoise = False
-    if "addnoise" in augmentations:
-        addNoise = True
+    if augmentation_name is not None:
+        augmentations = augmentation_name.split("_")
+        augmentations = [x.lower() for x in augmentations]
+        
+        if "addnoise" in augmentations:
+            addNoise = True
         
     # Evaluate the model on the test set
     test_data = get_test_set(data_dir, addNoise)
