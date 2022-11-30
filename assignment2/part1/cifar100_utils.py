@@ -68,7 +68,7 @@ def add_augmentation(augmentation_name, transform_list):
     if "randomhorizontalflip" in augmentations:
         transform_list.insert(0, transforms.RandomHorizontalFlip())
     if "colorjitter" in augmentations:
-        transform_list.insert(0, transforms.ColorJitter())
+        transform_list.insert(0, transforms.ColorJitter(hue=0.1))
 
     #######################
     # END OF YOUR CODE    #
