@@ -5,9 +5,9 @@
 #SBATCH --job-name=CLIPVP-CIFAR10
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=3
-#SBATCH --time=04:00:00
+#SBATCH --time=08:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=out/2.2b/slurm_output_%A_inverse_padding_cifar_112_220.out
+#SBATCH --output=out/2.2b/slurm_output_%A_combined_invpad_50.out
 
 
 module purge
@@ -32,10 +32,10 @@ mkdir -p $root
 
 datasets=(cifar100)
 #methods=(random_patch)
-#methods=(fixed_patch)
+#methods=(padding)
 methods=(inverse_padding)
-prompt_sizes=(220)
-#prompt_sizes=(30)
+#prompt_sizes=(220)
+prompt_sizes=(50)
 
 for dataset in "${datasets[@]}"; do
     for i in "${!methods[@]}"; do

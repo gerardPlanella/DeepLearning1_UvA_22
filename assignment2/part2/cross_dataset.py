@@ -221,8 +221,7 @@ def main():
         # That is, if a class in CIFAR100 corresponded to '4', it should now correspond to '14'
         # Set the result of this to the attribute cifar100_test.targets to override them
 
-        for target in cifar100_test.targets:
-            target = target + 10
+        cifar100_test.targets = [i + 10 for i in cifar100_test.targets]
 
         #######################
         # END OF YOUR CODE    #

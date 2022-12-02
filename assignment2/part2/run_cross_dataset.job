@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=3
 #SBATCH --time=04:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=out/2.4/slurm_output_%A_cross_padding_cifar10.out
+#SBATCH --output=out/2.4/slurm_output_%A_cross_fixed_patch_cifar100_v2.out
 
 
 module purge
@@ -26,16 +26,16 @@ text_prompt_template="This is a photo of a {}"
 epochs=20
 
 ## Set of experiments on CIFAR-10
-dataset="cifar10"
+dataset="cifar100"
 root=/scratch/$USER
 mkdir -p $root
 
-datasets=(cifar10)
+datasets=(cifar100)
 #methods=(random_patch)
-#methods=(fixed_patch)
-methods=(padding)
-prompt_sizes=(1)
+methods=(fixed_patch)
+#methods=(padding)
 #prompt_sizes=(30)
+prompt_sizes=(1)
 
 for dataset in "${datasets[@]}"; do
     for i in "${!methods[@]}"; do
@@ -51,6 +51,6 @@ for dataset in "${datasets[@]}"; do
             --prompt_size $prompt_size \
             --root $root \
             --evaluate \
-            --resume $code_dir/save/models/padding_1_cifar10_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/model_best.pth.tar
+            --resume $code_dir/save/models/fixed_patch_1_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1/model_best.pth.tar
     done
 done

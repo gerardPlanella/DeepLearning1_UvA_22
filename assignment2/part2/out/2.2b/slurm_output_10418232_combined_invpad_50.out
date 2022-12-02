@@ -1,0 +1,59 @@
+Running experiment on cifar100 with inverse_padding and prompt size 50
+Namespace(print_freq=10, save_freq=50, batch_size=128, num_workers=12, epochs=20, square_size=8, optim='sgd', learning_rate=40, weight_decay=0, warmup=1000, momentum=0.9, patience=1000, model='clip', arch='ViT-B/32', method='inverse_padding', prompt_size=50, text_prompt_template='This is a photo of a {}', visualize_prompt=False, root='/scratch/lcur0640', dataset='cifar100', image_size=224, test_noise=False, seed=0, model_dir='./save/models/aux', image_dir='./save/images', filename='inverse_padding_50_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1', trial=1, resume=None, evaluate=False, gpu=None, use_wandb=False, device='cuda', model_folder='./save/models/aux/inverse_padding_50_cifar100_clip_ViT-B/32_sgd_lr_40_decay_0_bsz_128_warmup_1000_trial_1')
+Traceback (most recent call last):
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 1348, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 1282, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 1328, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 1277, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 1037, in _send_output
+    self.send(msg)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 975, in send
+    self.connect()
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 1447, in connect
+    super().connect()
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/http/client.py", line 941, in connect
+    self.sock = self._create_connection(
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/socket.py", line 845, in create_connection
+    raise err
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/socket.py", line 833, in create_connection
+    sock.connect(sa)
+TimeoutError: [Errno 110] Connection timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/lcur0640/repos/DeepLearning1_UvA_22/assignment2/part2/.//main.py", line 151, in <module>
+    main()
+  File "/home/lcur0640/repos/DeepLearning1_UvA_22/assignment2/part2/.//main.py", line 140, in main
+    learn = Learner(args)
+  File "/home/lcur0640/repos/DeepLearning1_UvA_22/assignment2/part2/learner.py", line 46, in __init__
+    self.train_dataset, self.val_dataset, self.test_dataset = load_dataset(
+  File "/home/lcur0640/repos/DeepLearning1_UvA_22/assignment2/part2/dataset.py", line 60, in load_dataset
+    train_dataset = DATASET[args.dataset](
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torchvision/datasets/cifar.py", line 65, in __init__
+    self.download()
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torchvision/datasets/cifar.py", line 139, in download
+    download_and_extract_archive(self.url, self.root, filename=self.filename, md5=self.tgz_md5)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torchvision/datasets/utils.py", line 447, in download_and_extract_archive
+    download_url(url, download_root, filename, md5)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torchvision/datasets/utils.py", line 147, in download_url
+    url = _get_redirect_url(url, max_hops=max_redirect_hops)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torchvision/datasets/utils.py", line 95, in _get_redirect_url
+    with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 519, in open
+    response = self._open(req, data)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 536, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 1391, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+  File "/home/lcur0640/.conda/envs/dl2022/lib/python3.10/urllib/request.py", line 1351, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 110] Connection timed out>

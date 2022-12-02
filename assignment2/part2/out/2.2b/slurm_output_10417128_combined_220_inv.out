@@ -1,0 +1,2 @@
+Running experiment on cifar100 with inverse_padding and prompt size 220
+slurmstepd: error: *** JOB 10417128 ON r31n5 CANCELLED AT 2022-12-01T12:13:17 ***

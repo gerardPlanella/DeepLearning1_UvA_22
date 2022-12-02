@@ -128,7 +128,7 @@ class CustomCLIP(nn.Module):
         image_features = self.clip_model.encode_image(prompted_image)
         
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-        similarity = (100.0 * image_features @ self.text_features.T).softmax(dim=-1)
+        similarity = (image_features @ self.text_features.T)
         logits = similarity*self.logit_scale
         return logits
 
