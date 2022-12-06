@@ -21,7 +21,7 @@ import numpy as np
 
 class CNNEncoder(nn.Module):
     def __init__(self, num_input_channels: int = 1, num_filters: int = 32,
-                 z_dim: int = 20):
+                 z_dim: int = 20, act_fn : object = nn.GELU):
         """Encoder with a CNN network
         Inputs:
             num_input_channels - Number of input channels of the image. For
@@ -38,7 +38,24 @@ class CNNEncoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        raise NotImplementedError
+        c_hid = num_filters
+        self.net = nn.Sequential(
+            nn.Conv2d(num_input_channels, c_hid, kernel_size=3, padding=1, stride=2), # 32x32 => 16x16
+            act_fn(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.Conv2d(c_hid, 2*c_hid, kernel_size=3, padding=1, stride=2), # 16x16 => 8x8
+            act_fn(),
+            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1, stride=2), # 8x8 => 4x4
+            act_fn(),
+            nn.Flatten(), # Image grid to single feature vector
+            nn.Linear(2*16*c_hid, z_dim)
+        )
+
+        self.linear_mu = nn.Linear(z_dim, z_dim)
+        self.linear_std = nn.Linear(z_dim, z_dim)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -56,9 +73,10 @@ class CNNEncoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        mean = None
-        log_std = None
-        raise NotImplementedError
+        z = self.net(x)
+    
+        mean = self.linear_mu(z)
+        log_std = self.linear_std(z)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -67,7 +85,7 @@ class CNNEncoder(nn.Module):
 
 class CNNDecoder(nn.Module):
     def __init__(self, num_input_channels: int = 16, num_filters: int = 32,
-                 z_dim: int = 20):
+                 z_dim: int = 20, act_fn : object = nn.GELU):
         """Decoder with a CNN network.
         Inputs:
             num_input_channels - Number of channels of the image to
@@ -84,7 +102,22 @@ class CNNDecoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        raise NotImplementedError
+        c_hid = num_filters
+        self.linear = nn.Sequential(
+            nn.Linear(z_dim, 2*16*c_hid),
+            act_fn()
+        )
+        self.net = nn.Sequential(
+            nn.ConvTranspose2d(2*c_hid, 2*c_hid, kernel_size=3, output_padding=1, padding=1, stride=2), # 4x4 => 8x8
+            act_fn(),
+            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.ConvTranspose2d(2*c_hid, c_hid, kernel_size=3, output_padding=1, padding=1, stride=2), # 8x8 => 16x16
+            act_fn(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.ConvTranspose2d(c_hid, num_input_channels, kernel_size=3, output_padding=1, padding=3, stride=2), # 16x16 => 28x28
+        )
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -102,8 +135,9 @@ class CNNDecoder(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        x = None
-        raise NotImplementedError
+        x = self.linear(z)
+        x = x.reshape(x.shape[0], -1, 4, 4)
+        x = self.net(x)
         #######################
         # END OF YOUR CODE    #
         #######################

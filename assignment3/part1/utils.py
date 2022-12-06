@@ -36,7 +36,10 @@ def sample_reparameterize(mean, std):
     # PUT YOUR CODE HERE  #
     #######################
     z = None
-    raise NotImplementedError
+
+    dist = torch.randn(mean.shape)
+    z = mean + dist*std
+    
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -58,8 +61,7 @@ def KLD(mean, log_std):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    KLD = None
-    raise NotImplementedError
+    KLD = 0.5 * torch.sum(torch.exp(2*log_std) + mean**2 - 1 - 2*log_std, dim = -1)
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -78,8 +80,7 @@ def elbo_to_bpd(elbo, img_shape):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-    bpd = None
-    raise NotImplementedError
+    bpd = elbo * torch.log2(torch.exp(torch.ones_like(elbo))) * (1 / np.prod(img_shape[1:]))
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -110,6 +111,7 @@ def visualize_manifold(decoder, grid_size=20):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+
     img_grid = None
     raise NotImplementedError
     #######################
