@@ -43,8 +43,8 @@ class VAE(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters()
 
-        self.encoder = CNNEncoder(z_dim=z_dim, num_filters=num_filters)
-        self.decoder = CNNDecoder(z_dim=z_dim, num_filters=num_filters)
+        self.encoder = CNNEncoder(z_dim=z_dim, num_filters=num_filters).to(self.device)
+        self.decoder = CNNDecoder(z_dim=z_dim, num_filters=num_filters).to(self.device)
 
     def forward(self, imgs):
         """
@@ -70,18 +70,15 @@ class VAE(pl.LightningModule):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        imgs = torch.Tensor(imgs)
+        imgs = torch.Tensor(imgs).to(self.device)
         mean, log_std = self.encoder(imgs)
-        z = sample_reparameterize(mean, torch.exp(log_std) / 2)
+        z = sample_reparameterize(mean, torch.exp(log_std)).to(self.device)
         out = self.decoder(z)
         
-        L_rec = torch.nn.functional.cross_entropy(out, torch.squeeze(imgs, dim = 1), reduction = "none")
-        L_rec = L_rec.sum(-1).sum(-1).mean()
-        L_reg = KLD(mean, log_std).mean()
+        L_rec = torch.nn.functional.cross_entropy(out, torch.squeeze(imgs, dim = 1), reduction = "none").sum() / imgs.shape[0]
+        L_reg = KLD(mean, log_std).sum() / imgs.shape[0]
 
-
-        
-        bpd = -1 * elbo_to_bpd(L_reg - L_rec, imgs.shape)
+        bpd = elbo_to_bpd(L_reg + L_rec, imgs.shape)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -94,13 +91,28 @@ class VAE(pl.LightningModule):
         Inputs:
             batch_size - Number of images to generate
         Outputs:
-            x_samples - Sampled, 4-bit images. Shape: [B,C,H,W]
+            x_samples - Sampled, 4-bit images. Shape: [B,1,H,W] 
         """
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        x_samples = None
-        raise NotImplementedError
+
+        
+        z_samples = torch.randn(batch_size, self.hparams.z_dim)
+        x_logits = self.decoder(z_samples.to(self.device))
+        x = x_logits.softmax(dim = 1)
+
+        x_flat = torch.flatten(x, start_dim = 2)
+        x_samples = torch.zeros(batch_size, 1, x.shape[2], x.shape[3])
+
+        for batch in range(x_flat.shape[0]):
+            image = x_flat[batch, :, :]
+            sample = torch.multinomial(image.T, 1)
+            sample = torch.squeeze(sample)
+            sample = torch.reshape(sample, (x_samples[0].shape))
+            x_samples[batch:] = sample
+        
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -149,7 +161,7 @@ class GenerateCallback(pl.Callback):
         self.every_n_epochs = every_n_epochs
         self.save_to_disk = save_to_disk
 
-    def on_epoch_end(self, trainer, pl_module):
+    def on_train_epoch_end(self, trainer, pl_module):
         """
         This function is called after every epoch.
         Call the save_and_sample function every N epochs.
@@ -216,14 +228,14 @@ def train_vae(args):
     # Testing
     model = VAE.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
     test_result = trainer.test(model, dataloaders=test_loader, verbose=True)
-
+    
     # Manifold generation
     if args.z_dim == 2:
         img_grid = visualize_manifold(model.decoder)
         save_image(img_grid,
                    os.path.join(trainer.logger.log_dir, 'vae_manifold.png'),
                    normalize=False)
-
+    
     return test_result
 
 

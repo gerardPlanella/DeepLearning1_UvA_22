@@ -37,7 +37,7 @@ def sample_reparameterize(mean, std):
     #######################
     z = None
 
-    dist = torch.randn(mean.shape)
+    dist = torch.randn_like(mean)
     z = mean + dist*std
     
     #######################
@@ -113,7 +113,31 @@ def visualize_manifold(decoder, grid_size=20):
     #######################
 
     img_grid = None
-    raise NotImplementedError
+    percentiles = torch.Tensor([(x - 0.5)/ grid_size for x in range(1, grid_size + 1)])
+    normal = torch.distributions.Normal(0, 1)
+    z_values = normal.icdf(percentiles)
+    grid_tuple = torch.meshgrid(z_values, z_values, indexing = "ij")
+    grid = torch.stack(grid_tuple, dim = 0)
+
+    images = []
+
+    for z1 in range(grid_size):
+        for z2 in range(grid_size):
+            z = grid[:, z1, z2] 
+            z = z[None, :] #Add dummy dimension 1x2
+            x_logits = decoder(z) #1x16x28x28
+            x_logits = torch.squeeze(x_logits) #16x28x28
+            x = x_logits.softmax(dim = 0)
+            x_flat = torch.flatten(x, start_dim = 1) #16x784
+            sample = torch.multinomial(x_flat.T, 1) #784x1
+            sample = torch.squeeze(sample)#784
+            image = torch.reshape(sample, (1, x.shape[1], x.shape[2])).float() / 15
+            images.append(image)
+
+    images = torch.stack(images, 0)
+    img_grid = make_grid(images,normalize=True, nrow=grid_size, value_range=(0, 1), pad_value=0.5)
+    img_grid = img_grid.detach().cpu()
+
     #######################
     # END OF YOUR CODE    #
     #######################
