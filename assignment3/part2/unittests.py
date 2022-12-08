@@ -51,7 +51,7 @@ class TestDecoder(unittest.TestCase):
         latent = ae.decoder(z)
         self.assertTrue(len(latent.shape) == 4 and
                         all([latent.shape[i] == o for i, o in enumerate([4, 1, 28, 28])]),
-                        msg="The output of the decoder should be an image with shape [B,C,H,W].")
+                        msg=f"The output of the decoder should be an image with shape [B=4,C=1,H=28,W=28]. But found shape {latent.shape}")
 
     @torch.no_grad()
     def test_output_values(self):
