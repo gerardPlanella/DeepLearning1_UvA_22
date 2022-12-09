@@ -126,6 +126,9 @@ def train_aae(epoch, model, train_loader,
         for key, val in ae_dict.items():
             logger_ae.summary_writer.add_scalar(key, val, global_step = epoch)
 
+        for key, val in logging_dict.items():
+            logger_disc.summary_writer.add_scalar(key, val, global_step = epoch)
+
         if (epoch <= 1 or epoch % 5 == 0) and batch_idx == 0:
             save_reconstruction(model, epoch, logger_ae.summary_writer, x)
 
