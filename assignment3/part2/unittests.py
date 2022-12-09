@@ -147,6 +147,8 @@ class TestAAE(unittest.TestCase):
 
         disc_loss, disc_dict = self.aae.get_loss_discriminator(z_fake)
 
+        disc_loss = disc_dict["disc_loss"]
+
         self.assertTrue(len(disc_loss.squeeze().shape) == 0,
                         msg="The discriminator loss must be a scalar, but has the shape %s." % str(disc_loss.shape))
         true_loss = -np.log(0.5)
@@ -157,6 +159,7 @@ class TestAAE(unittest.TestCase):
         disc_loss.backward()
         self.assertTrue(next(iter(self.aae.discriminator.parameters())).grad is not None,
                         msg="No gradients detected for the discriminator in the discriminator_step.")
+                        
         self.aae.zero_grad()
 
 

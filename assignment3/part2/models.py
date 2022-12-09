@@ -203,6 +203,7 @@ class AdversarialAE(nn.Module):
         self.encoder = ConvEncoder(z_dim = z_dim)
         self.decoder = ConvDecoder(z_dim = z_dim)
         self.recon_loss = nn.MSELoss(reduction="mean")
+        self.disc_loss = nn.BCEWithLogitsLoss()
         self.discriminator = Discriminator(z_dim)
 
     def forward(self, x):
@@ -247,23 +248,16 @@ class AdversarialAE(nn.Module):
                         "recon_loss": None,
                         "ae_loss": None}
 
-
-
         logging_dict["recon_loss"] = self.recon_loss(recon_x, x)
-
         
-        d_loss = nn.BCEWithLogitsLoss()
-        sig = nn.Sigmoid()
-        d = sig(self.discriminator(z_fake))
+        d = self.discriminator(z_fake)
 
-        logging_dict["gen_loss"] = d_loss(d, torch.zeros_like(d))
-
-        if(lambda_ == 0):
-            logging_dict["gen_loss"] = 0
+        logging_dict["gen_loss"] = self.disc_loss(d, torch.zeros_like(d))
 
         ae_loss = lambda_ * logging_dict["recon_loss"] + (1-lambda_)*logging_dict["gen_loss"]
         
         logging_dict["ae_loss"] = ae_loss
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -285,11 +279,31 @@ class AdversarialAE(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
+        
         disc_loss = None
         logging_dict = {"disc_loss": None,
                         "loss_real": None,
                         "loss_fake": None,
                         "accuracy": None}
+
+        z_real = torch.randn_like(z_fake)
+
+        d_real = self.discriminator(z_real)
+        d_fake = self.discriminator(z_fake)
+
+        logging_dict["loss_real"] = self.disc_loss(d_real, torch.ones_like(d_real))
+        logging_dict["loss_fake"] = self.disc_loss(d_fake, torch.zeros_like(d_fake))
+
+        logging_dict["disc_loss"] = logging_dict["loss_real"] + logging_dict["loss_fake"]
+        disc_loss = logging_dict["disc_loss"]
+
+        tp = (d_real > 0).sum()
+        tn = (d_fake < 0).sum()
+
+        n = (d_real.shape[0] + d_fake.shape[0])
+
+        logging_dict["accuracy"] =  (tp + tn)/n
+
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -308,7 +322,6 @@ class AdversarialAE(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        
         z_samples = torch.randn(batch_size, self.z_dim, device=self.device)
         x = self.decoder(z_samples)
         #######################

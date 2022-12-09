@@ -95,17 +95,18 @@ def train_aae(epoch, model, train_loader,
     assert 0 <= lambda_ <= 1, "Lambda should be between 0 and 1. "
     model.train()
     train_loss = 0
+    torch.autograd.set_detect_anomaly(True)
     for batch_idx, (x, _) in enumerate(train_loader):
         x = x.to(model.device)
         #######################
         # PUT YOUR CODE HERE  #
         #######################
         # Encoder-Decoder update
-        z = model.encoder(x)
-        x_recon, z_fake = model.decoder(z)
+        optimizer_ae.zero_grad()
+        x_recon, z_fake = model(x)
         ae_loss, ae_dict = model.get_loss_autoencoder(x, x_recon, z_fake, lambda_=lambda_)
         ae_loss.backward()
-
+        optimizer_ae.step()
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -113,16 +114,27 @@ def train_aae(epoch, model, train_loader,
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        # Discriminator update
-        raise NotImplementedError
+        optimizer_disc.zero_grad()
+        disc_loss, logging_dict = model.get_loss_discriminator(z_fake.detach())
+        disc_loss.backward()
+        optimizer_disc.step()
         #######################
         # END OF YOUR CODE    #
         #######################
-        train_loss += disc_loss.item() + ae_loss.item()
+        train_loss = train_loss + disc_loss.item() + ae_loss.item()
+
+        for key, val in ae_dict.items():
+            logger_ae.summary_writer.add_scalar(key, val, global_step = epoch)
 
         if (epoch <= 1 or epoch % 5 == 0) and batch_idx == 0:
             save_reconstruction(model, epoch, logger_ae.summary_writer, x)
-    print('====> Epoch {} : Average loss: {:.4f}'.format(epoch, train_loss / len(train_loader)))
+
+    print('====> Epoch {} : Average loss: {:.4f}, AE Loss: {:.4f}, Discriminator Loss: {:.4f}, \
+        Generator Loss: {:.4f}, Recon Loss: {:.4f}, Loss Real {:.4f}, Loss Fake {:.4f}, \
+         Accuracy {:.4f}'.format(epoch, train_loss / len(train_loader), ae_loss.item(), disc_loss.item(), \
+            ae_dict["gen_loss"].item(), ae_dict["recon_loss"].item(), logging_dict["loss_real"].item(), logging_dict["loss_fake"].item(), \
+                logging_dict["accuracy"].item()))
+
 
 
 def main(args):
@@ -165,7 +177,6 @@ def main(args):
     # Create model
     model = AdversarialAE(z_dim=args.z_dim)
     model = model.to(device)
-
     # Create two separate optimizers for generator and discriminator
     #######################
     # PUT YOUR CODE HERE  #
@@ -175,12 +186,11 @@ def main(args):
     
     optimizer_ae = optim.Adam([
                 {'params': model.encoder.parameters()},
-                {'params': model.decoder.parameters(), 'beta1': 0.5, "lr": args.ae_lr}
-            ])
+                {'params': model.decoder.parameters()}
+            ], lr=args.ae_lr, betas=(0.5, 0.999))
     optimizer_disc = optim.SGD([
-                {'params': model.discriminator.parameters()},
-                {'params': model.endcoder.parameters(), 'lr': args.d_lr}
-            ])
+                {'params': model.discriminator.parameters()}
+            ], lr = args.d_lr)
 
     #######################
     # END OF YOUR CODE    #
