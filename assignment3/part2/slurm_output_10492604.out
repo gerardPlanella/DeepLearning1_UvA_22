@@ -1,0 +1,49 @@
+Global seed set to 42
+Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz to /scratch/MNIST/raw/train-images-idx3-ubyte.gz
+  0%|          | 0/9912422 [00:00<?, ?it/s]100%|██████████| 9912422/9912422 [00:00<00:00, 148854160.31it/s]
+Extracting /scratch/MNIST/raw/train-images-idx3-ubyte.gz to /scratch/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz to /scratch/MNIST/raw/train-labels-idx1-ubyte.gz
+  0%|          | 0/28881 [00:00<?, ?it/s]100%|██████████| 28881/28881 [00:00<00:00, 102138021.77it/s]
+Extracting /scratch/MNIST/raw/train-labels-idx1-ubyte.gz to /scratch/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz to /scratch/MNIST/raw/t10k-images-idx3-ubyte.gz
+  0%|          | 0/1648877 [00:00<?, ?it/s]100%|██████████| 1648877/1648877 [00:00<00:00, 119807559.92it/s]
+Extracting /scratch/MNIST/raw/t10k-images-idx3-ubyte.gz to /scratch/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz to /scratch/MNIST/raw/t10k-labels-idx1-ubyte.gz
+  0%|          | 0/4542 [00:00<?, ?it/s]100%|██████████| 4542/4542 [00:00<00:00, 20843029.29it/s]
+Extracting /scratch/MNIST/raw/t10k-labels-idx1-ubyte.gz to /scratch/MNIST/raw
+
+/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 3, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Using device cuda:0
+====> Epoch 0 : Average loss: 1.3189, AE Loss: 0.0853, Discriminator Loss: 1.2215,         Generator Loss: 0.7773, Recon Loss: 0.0818, Loss Real 0.5886, Loss Fake 0.6329,          Accuracy 0.7500
+====> Epoch 1 : Average loss: 1.3019, AE Loss: 0.0801, Discriminator Loss: 1.3707,         Generator Loss: 0.7820, Recon Loss: 0.0765, Loss Real 0.6846, Loss Fake 0.6862,          Accuracy 0.5938
+====> Epoch 2 : Average loss: 1.3170, AE Loss: 0.0736, Discriminator Loss: 1.1703,         Generator Loss: 0.8094, Recon Loss: 0.0699, Loss Real 0.5553, Loss Fake 0.6150,          Accuracy 0.7344
+====> Epoch 3 : Average loss: 1.2773, AE Loss: 0.0737, Discriminator Loss: 1.1887,         Generator Loss: 0.8569, Recon Loss: 0.0698, Loss Real 0.5990, Loss Fake 0.5897,          Accuracy 0.7500
+====> Epoch 4 : Average loss: 1.2163, AE Loss: 0.0728, Discriminator Loss: 1.1657,         Generator Loss: 0.8258, Recon Loss: 0.0690, Loss Real 0.5461, Loss Fake 0.6196,          Accuracy 0.7344
+====> Epoch 5 : Average loss: 1.1866, AE Loss: 0.0527, Discriminator Loss: 1.1570,         Generator Loss: 0.9626, Recon Loss: 0.0482, Loss Real 0.6156, Loss Fake 0.5414,          Accuracy 0.7188
+====> Epoch 6 : Average loss: 1.1865, AE Loss: 0.0578, Discriminator Loss: 1.1447,         Generator Loss: 0.8597, Recon Loss: 0.0538, Loss Real 0.5356, Loss Fake 0.6092,          Accuracy 0.7656
+====> Epoch 7 : Average loss: 1.1939, AE Loss: 0.0596, Discriminator Loss: 1.1627,         Generator Loss: 0.9309, Recon Loss: 0.0553, Loss Real 0.5504, Loss Fake 0.6123,          Accuracy 0.6406
+====> Epoch 8 : Average loss: 1.1963, AE Loss: 0.0637, Discriminator Loss: 1.1596,         Generator Loss: 0.8976, Recon Loss: 0.0595, Loss Real 0.5209, Loss Fake 0.6387,          Accuracy 0.7188
+====> Epoch 9 : Average loss: 1.1960, AE Loss: 0.0607, Discriminator Loss: 1.3009,         Generator Loss: 0.8943, Recon Loss: 0.0565, Loss Real 0.6663, Loss Fake 0.6346,          Accuracy 0.6406
+====> Epoch 10 : Average loss: 1.1917, AE Loss: 0.0595, Discriminator Loss: 1.3053,         Generator Loss: 0.8751, Recon Loss: 0.0554, Loss Real 0.6328, Loss Fake 0.6725,          Accuracy 0.6406
+====> Epoch 11 : Average loss: 1.1922, AE Loss: 0.0581, Discriminator Loss: 1.2090,         Generator Loss: 1.0427, Recon Loss: 0.0532, Loss Real 0.6798, Loss Fake 0.5292,          Accuracy 0.6875
+====> Epoch 12 : Average loss: 1.1903, AE Loss: 0.0630, Discriminator Loss: 1.0802,         Generator Loss: 1.0920, Recon Loss: 0.0579, Loss Real 0.6051, Loss Fake 0.4751,          Accuracy 0.7188
+====> Epoch 13 : Average loss: 1.1957, AE Loss: 0.0681, Discriminator Loss: 1.2352,         Generator Loss: 1.0580, Recon Loss: 0.0631, Loss Real 0.6784, Loss Fake 0.5568,          Accuracy 0.6406
+====> Epoch 14 : Average loss: 1.1942, AE Loss: 0.0491, Discriminator Loss: 1.1326,         Generator Loss: 0.9956, Recon Loss: 0.0444, Loss Real 0.5301, Loss Fake 0.6025,          Accuracy 0.7344
+====> Epoch 15 : Average loss: 1.1894, AE Loss: 0.0546, Discriminator Loss: 1.0742,         Generator Loss: 1.0782, Recon Loss: 0.0495, Loss Real 0.5757, Loss Fake 0.4984,          Accuracy 0.7500
+====> Epoch 16 : Average loss: 1.1898, AE Loss: 0.0467, Discriminator Loss: 1.0445,         Generator Loss: 1.0884, Recon Loss: 0.0414, Loss Real 0.5670, Loss Fake 0.4775,          Accuracy 0.7656
+====> Epoch 17 : Average loss: 1.1912, AE Loss: 0.0589, Discriminator Loss: 1.0501,         Generator Loss: 1.0947, Recon Loss: 0.0537, Loss Real 0.5283, Loss Fake 0.5218,          Accuracy 0.7344
+====> Epoch 18 : Average loss: 1.1919, AE Loss: 0.0488, Discriminator Loss: 1.1827,         Generator Loss: 0.9935, Recon Loss: 0.0440, Loss Real 0.6073, Loss Fake 0.5754,          Accuracy 0.7500
+====> Epoch 19 : Average loss: 1.1895, AE Loss: 0.0549, Discriminator Loss: 1.1226,         Generator Loss: 0.9658, Recon Loss: 0.0503, Loss Real 0.5567, Loss Fake 0.5659,          Accuracy 0.7031
+====> Epoch 20 : Average loss: 1.1883, AE Loss: 0.0542, Discriminator Loss: 1.1988,         Generator Loss: 0.8975, Recon Loss: 0.0499, Loss Real 0.5732, Loss Fake 0.6256,          Accuracy 0.6562
+====> Epoch 21 : Average loss: 1.1877, AE Loss: 0.0547, Discriminator Loss: 1.2725,         Generator Loss: 1.0873, Recon Loss: 0.0495, Loss Real 0.7611, Loss Fake 0.5114,          Accuracy 0.6719
+====> Epoch 22 : Average loss: 1.1891, AE Loss: 0.0479, Discriminator Loss: 1.2141,         Generator Loss: 0.9521, Recon Loss: 0.0434, Loss Real 0.6164, Loss Fake 0.5977,          Accuracy 0.6406
+====> Epoch 23 : Average loss: 1.1900, AE Loss: 0.0528, Discriminator Loss: 1.1112,         Generator Loss: 1.0350, Recon Loss: 0.0479, Loss Real 0.5586, Loss Fake 0.5526,          Accuracy 0.7188
+====> Epoch 24 : Average loss: 1.1860, AE Loss: 0.0559, Discriminator Loss: 1.1183,         Generator Loss: 1.1000, Recon Loss: 0.0507, Loss Real 0.6558, Loss Fake 0.4625,          Accuracy 0.7031

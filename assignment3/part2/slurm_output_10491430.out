@@ -1,79 +1,0 @@
-Global seed set to 42
-Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz to /scratch/MNIST/raw/train-images-idx3-ubyte.gz
-  0%|          | 0/9912422 [00:00<?, ?it/s]100%|██████████| 9912422/9912422 [00:00<00:00, 173936573.31it/s]
-Extracting /scratch/MNIST/raw/train-images-idx3-ubyte.gz to /scratch/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz to /scratch/MNIST/raw/train-labels-idx1-ubyte.gz
-  0%|          | 0/28881 [00:00<?, ?it/s]100%|██████████| 28881/28881 [00:00<00:00, 96445616.10it/s]
-Extracting /scratch/MNIST/raw/train-labels-idx1-ubyte.gz to /scratch/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz to /scratch/MNIST/raw/t10k-images-idx3-ubyte.gz
-  0%|          | 0/1648877 [00:00<?, ?it/s]100%|██████████| 1648877/1648877 [00:00<00:00, 136147634.64it/s]
-Extracting /scratch/MNIST/raw/t10k-images-idx3-ubyte.gz to /scratch/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz to /scratch/MNIST/raw/t10k-labels-idx1-ubyte.gz
-  0%|          | 0/4542 [00:00<?, ?it/s]100%|██████████| 4542/4542 [00:00<00:00, 19579166.26it/s]
-Extracting /scratch/MNIST/raw/t10k-labels-idx1-ubyte.gz to /scratch/MNIST/raw
-
-/home/lcur0640/.conda/envs/dl2022/lib/python3.10/site-packages/torch/utils/data/dataloader.py:554: UserWarning: This DataLoader will create 4 worker processes in total. Our suggested max number of worker in current system is 3, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
-  warnings.warn(_create_warning_msg(
-Using device cuda:0
-====> Epoch 0 : Average loss: 0.4032
-====> Epoch 1 : Average loss: 0.1945
-====> Epoch 2 : Average loss: 0.1758
-====> Epoch 3 : Average loss: 0.1935
-====> Epoch 4 : Average loss: 0.2173
-====> Epoch 5 : Average loss: 0.2477
-====> Epoch 6 : Average loss: 0.2793
-====> Epoch 7 : Average loss: 0.3102
-====> Epoch 8 : Average loss: 0.3406
-====> Epoch 9 : Average loss: 0.3605
-====> Epoch 10 : Average loss: 0.3782
-====> Epoch 11 : Average loss: 0.3979
-====> Epoch 12 : Average loss: 0.4185
-====> Epoch 13 : Average loss: 0.4280
-====> Epoch 14 : Average loss: 0.4348
-====> Epoch 15 : Average loss: 0.4427
-====> Epoch 16 : Average loss: 0.4554
-====> Epoch 17 : Average loss: 0.4530
-====> Epoch 18 : Average loss: 0.4576
-====> Epoch 19 : Average loss: 0.4537
-====> Epoch 20 : Average loss: 0.4551
-====> Epoch 21 : Average loss: 0.4581
-====> Epoch 22 : Average loss: 0.4577
-====> Epoch 23 : Average loss: 0.4567
-====> Epoch 24 : Average loss: 0.4585
-====> Epoch 25 : Average loss: 0.4559
-====> Epoch 26 : Average loss: 0.4519
-====> Epoch 27 : Average loss: 0.4496
-====> Epoch 28 : Average loss: 0.4476
-====> Epoch 29 : Average loss: 0.4483
-====> Epoch 30 : Average loss: 0.4479
-====> Epoch 31 : Average loss: 0.4431
-====> Epoch 32 : Average loss: 0.4438
-====> Epoch 33 : Average loss: 0.4462
-====> Epoch 34 : Average loss: 0.4407
-====> Epoch 35 : Average loss: 0.4364
-====> Epoch 36 : Average loss: 0.4373
-====> Epoch 37 : Average loss: 0.4329
-====> Epoch 38 : Average loss: 0.4330
-====> Epoch 39 : Average loss: 0.4319
-====> Epoch 40 : Average loss: 0.4334
-====> Epoch 41 : Average loss: 0.4354
-====> Epoch 42 : Average loss: 0.4328
-====> Epoch 43 : Average loss: 0.4332
-====> Epoch 44 : Average loss: 0.4307
-====> Epoch 45 : Average loss: 0.4294
-====> Epoch 46 : Average loss: 0.4292
-====> Epoch 47 : Average loss: 0.4288
-====> Epoch 48 : Average loss: 0.4269
-====> Epoch 49 : Average loss: 0.4244
-====> Epoch 50 : Average loss: 0.4249
-====> Epoch 51 : Average loss: 0.4253
-srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
-slurmstepd: error: *** STEP 10491430.0 ON r31n5 CANCELLED AT 2022-12-09T15:24:11 ***
-slurmstepd: error: *** JOB 10491430 ON r31n5 CANCELLED AT 2022-12-09T15:24:11 ***

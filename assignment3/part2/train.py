@@ -95,7 +95,6 @@ def train_aae(epoch, model, train_loader,
     assert 0 <= lambda_ <= 1, "Lambda should be between 0 and 1. "
     model.train()
     train_loss = 0
-    torch.autograd.set_detect_anomaly(True)
     for batch_idx, (x, _) in enumerate(train_loader):
         x = x.to(model.device)
         #######################
@@ -118,16 +117,19 @@ def train_aae(epoch, model, train_loader,
         disc_loss, logging_dict = model.get_loss_discriminator(z_fake.detach())
         disc_loss.backward()
         optimizer_disc.step()
-        #######################
-        # END OF YOUR CODE    #
-        #######################
-        train_loss = train_loss + disc_loss.item() + ae_loss.item()
 
         for key, val in ae_dict.items():
             logger_ae.summary_writer.add_scalar(key, val, global_step = epoch)
 
         for key, val in logging_dict.items():
             logger_disc.summary_writer.add_scalar(key, val, global_step = epoch)
+
+        #######################
+        # END OF YOUR CODE    #
+        #######################
+        train_loss = train_loss + disc_loss.item() + ae_loss.item()
+
+
 
         if (epoch <= 1 or epoch % 5 == 0) and batch_idx == 0:
             save_reconstruction(model, epoch, logger_ae.summary_writer, x)

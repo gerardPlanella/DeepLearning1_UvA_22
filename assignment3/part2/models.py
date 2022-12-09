@@ -202,8 +202,6 @@ class AdversarialAE(nn.Module):
         self.z_dim = z_dim
         self.encoder = ConvEncoder(z_dim = z_dim)
         self.decoder = ConvDecoder(z_dim = z_dim)
-        self.recon_loss = nn.MSELoss(reduction="mean")
-        self.disc_loss = nn.BCEWithLogitsLoss()
         self.discriminator = Discriminator(z_dim)
 
     def forward(self, x):
@@ -248,11 +246,12 @@ class AdversarialAE(nn.Module):
                         "recon_loss": None,
                         "ae_loss": None}
 
-        logging_dict["recon_loss"] = self.recon_loss(recon_x, x)
+        logging_dict["recon_loss"] = nn.MSELoss()(recon_x, x)
         
         d = self.discriminator(z_fake)
 
-        logging_dict["gen_loss"] = self.disc_loss(d, torch.zeros_like(d))
+        
+        logging_dict["gen_loss"] = nn.BCEWithLogitsLoss()(d, torch.ones_like(d))
 
         ae_loss = lambda_ * logging_dict["recon_loss"] + (1-lambda_)*logging_dict["gen_loss"]
         
@@ -291,8 +290,8 @@ class AdversarialAE(nn.Module):
         d_real = self.discriminator(z_real)
         d_fake = self.discriminator(z_fake)
 
-        logging_dict["loss_real"] = self.disc_loss(d_real, torch.ones_like(d_real))
-        logging_dict["loss_fake"] = self.disc_loss(d_fake, torch.zeros_like(d_fake))
+        logging_dict["loss_real"] = nn.BCEWithLogitsLoss()(d_real, torch.ones_like(d_real))
+        logging_dict["loss_fake"] = nn.BCEWithLogitsLoss()(d_fake, torch.zeros_like(d_fake))
 
         logging_dict["disc_loss"] = logging_dict["loss_real"] + logging_dict["loss_fake"]
         disc_loss = logging_dict["disc_loss"]
@@ -322,7 +321,7 @@ class AdversarialAE(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        z_samples = torch.randn(batch_size, self.z_dim, device=self.device)
+        z_samples = torch.randn((batch_size, self.z_dim), device=self.device)
         x = self.decoder(z_samples)
         #######################
         # END OF YOUR CODE    #
