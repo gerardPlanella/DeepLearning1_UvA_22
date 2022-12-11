@@ -29,3 +29,7 @@ Using device cuda:0
 ====> Epoch 4 : Average loss: 1.4979, AE Loss: 0.1700, Discriminator Loss: 1.3241,         Generator Loss: 0.7735, Recon Loss: 0.1669, Loss Real 0.6603, Loss Fake 0.6638,          Accuracy 0.5781
 ====> Epoch 5 : Average loss: 1.4943, AE Loss: 0.1780, Discriminator Loss: 1.2406,         Generator Loss: 0.8159, Recon Loss: 0.1748, Loss Real 0.6077, Loss Fake 0.6330,          Accuracy 0.6406
 ====> Epoch 6 : Average loss: 1.4950, AE Loss: 0.1760, Discriminator Loss: 1.2734,         Generator Loss: 0.7523, Recon Loss: 0.1731, Loss Real 0.5808, Loss Fake 0.6926,          Accuracy 0.6094
+====> Epoch 7 : Average loss: 1.4958, AE Loss: 0.1791, Discriminator Loss: 1.3063,         Generator Loss: 0.7901, Recon Loss: 0.1761, Loss Real 0.6706, Loss Fake 0.6357,          Accuracy 0.6094
+====> Epoch 8 : Average loss: 1.4958, AE Loss: 0.1638, Discriminator Loss: 1.3383,         Generator Loss: 0.7957, Recon Loss: 0.1606, Loss Real 0.7120, Loss Fake 0.6262,          Accuracy 0.5469
+====> Epoch 9 : Average loss: 1.4969, AE Loss: 0.1510, Discriminator Loss: 1.3570,         Generator Loss: 0.7623, Recon Loss: 0.1479, Loss Real 0.7039, Loss Fake 0.6531,          Accuracy 0.5781
+====> Epoch 10 : Average loss: 1.4982, AE Loss: 0.1764, Discriminator Loss: 1.3260,         Generator Loss: 0.7586, Recon Loss: 0.1735, Loss Real 0.6621, Loss Fake 0.6638,          Accuracy 0.6250
